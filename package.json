@@ -2,29 +2,33 @@
   "name": "depthourbooking",
   "version": "0.0.1",
   "description": "My MCP Server",
+  "type": "module",
   "main": "./lib/src/index.js",
   "scripts": {
-    "dev:sse": "nodemon --exec node --inspect=9239 --signal SIGINT -r ts-node/register ./src/index.ts sse",
-    "dev:stdio": "nodemon --quiet --exec node --signal SIGINT -r ts-node/register ./src/index.ts stdio",
+    "dev:stdio": "nodemon --quiet --exec node --signal SIGINT -r ts-node/register ./src/index.ts",
     "dev:inspector": "mcp-inspector",
     "build": "tsc --build",
-    "start:sse": "node ./lib/src/index.js sse",
-    "start:sdtio": "node ./lib/src/index.js stdio"
+    "start": "node ./lib/src/index.js",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.7.0",
-    "@types/node-fetch": "^2.6.12",
     "dotenv": "^17.0.1",
-    "express": "^4.21.2",
     "node-fetch": "^2.7.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.30.1",
     "@modelcontextprotocol/inspector": "0.6.0",
-    "@types/express": "^4.17.21",
     "@types/node": "^22.13.10",
+    "@types/node-fetch": "^2.6.12",
+    "@typescript-eslint/eslint-plugin": "^8.35.1",
+    "@typescript-eslint/parser": "^8.35.1",
+    "eslint": "^9.30.1",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2"

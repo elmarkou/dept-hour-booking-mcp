@@ -1,0 +1,61 @@
+{
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "dept_api_token",
+      "description": "Dept API Token",
+      "password": true
+    },
+    {
+      "type": "promptString",
+      "id": "dept_employee_id",
+      "description": "Your Dept Employee ID"
+    },
+    {
+      "type": "promptString",
+      "id": "dept_corporation_id",
+      "description": "Your Dept Corporation ID"
+    },
+    {
+      "type": "promptString",
+      "id": "dept_default_budget_id",
+      "description": "Default Budget ID"
+    }
+  ],
+  "servers": {
+    "dept-hour-booking-local": {
+      "command": "node",
+      "args": ["-r", "ts-node/register", "./src/index.ts"],
+      "cwd": "/Users/Elmar/mcpServers/Dept Hourbooking",
+      "env": {
+        "DEPT_API_TOKEN": "${input:dept_api_token}",
+        "DEPT_EMPLOYEE_ID": "${input:dept_employee_id}",
+        "DEPT_CORPORATION_ID": "${input:dept_corporation_id}",
+        "DEPT_DEFAULT_BUDGET_ID": "${input:dept_default_budget_id}"
+      }
+    },
+    "dept-hour-booking-docker": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "DEPT_API_TOKEN",
+        "-e",
+        "DEPT_EMPLOYEE_ID",
+        "-e",
+        "DEPT_CORPORATION_ID",
+        "-e",
+        "DEPT_DEFAULT_BUDGET_ID",
+        "dept-hour-booking-mcp-server"
+      ],
+      "env": {
+        "DEPT_API_TOKEN": "${input:dept_api_token}",
+        "DEPT_EMPLOYEE_ID": "${input:dept_employee_id}",
+        "DEPT_CORPORATION_ID": "${input:dept_corporation_id}",
+        "DEPT_DEFAULT_BUDGET_ID": "${input:dept_default_budget_id}"
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  dept-hour-booking:
+    build: .
+    environment:
+      - DEPT_API_TOKEN=${DEPT_API_TOKEN}
+      - DEPT_EMPLOYEE_ID=${DEPT_EMPLOYEE_ID}
+      - DEPT_CORPORATION_ID=${DEPT_CORPORATION_ID}
+      - DEPT_DEFAULT_ACTIVITY_ID=${DEPT_DEFAULT_ACTIVITY_ID}
+      - DEPT_DEFAULT_PROJECT_ID=${DEPT_DEFAULT_PROJECT_ID}
+      - DEPT_DEFAULT_COMPANY_ID=${DEPT_DEFAULT_COMPANY_ID}
+      - DEPT_DEFAULT_BUDGET_ID=${DEPT_DEFAULT_BUDGET_ID}
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: ["npm", "run", "dev:stdio"]
