@@ -83,7 +83,7 @@ async function deptApiCall(path: string, options: ApiOptions = {}) {
   try {
     const response = await fetch(url, { ...options, headers });
     const data = await response.json();
-    
+
     if (!response.ok) {
       throw new Error(`API Error: ${response.status} - ${JSON.stringify(data)}`);
     }
@@ -310,7 +310,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: "text",
-              text: `🔍 Found ${result.length} budgets matching "${validated.term}"\n\n${result.map((budget: Budget, index: number) => `${index + 1}. ${budget.name || 'Unnamed Budget'} (ID: ${budget.id})`).join('\n')}\n\nFull results:\n${JSON.stringify(result, null, 2)}`,
+              text: `🔍 Found ${result?.budget?.length} budgets matching "${validated.term}"\n\n${result?.budget?.map((budget: Budget, index: number) => `${index + 1}. ${budget.name || 'Unnamed Budget'} (ID: ${budget.id})`).join('\n')}\n\nFull results:\n${JSON.stringify(result, null, 2)}`,
             },
           ],
         };
