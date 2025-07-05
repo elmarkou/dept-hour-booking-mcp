@@ -2,35 +2,35 @@
   "inputs": [
     {
       "type": "promptString",
-      "id": "dept_client_id",
+      "id": "deptClientId",
       "description": "Dept Client ID",
       "password": true
     },
     {
       "type": "promptString",
-      "id": "dept_client_secret",
+      "id": "deptClientSecret",
       "description": "Dept Client Secret",
       "password": true
     },
     {
       "type": "promptString",
-      "id": "dept_google_id_token",
+      "id": "deptGoogleIdToken",
       "description": "Google ID Token (from Google OAuth)",
       "password": true
     },
     {
       "type": "promptString",
-      "id": "dept_employee_id",
+      "id": "deptEmployeeId",
       "description": "Your Dept Employee ID"
     },
     {
       "type": "promptString",
-      "id": "dept_corporation_id",
+      "id": "deptCorporationId",
       "description": "Your Dept Corporation ID"
     },
     {
       "type": "promptString",
-      "id": "dept_default_budget_id",
+      "id": "deptDefaultBudgetId",
       "description": "Default Budget ID"
     }
   ],
@@ -40,12 +40,12 @@
       "args": ["-r", "ts-node/register", "./src/index.ts"],
       "cwd": "/Users/Elmar/mcpServers/Dept Hourbooking",
       "env": {
-        "DEPT_CLIENT_ID": "${input:dept_client_id}",
-        "DEPT_CLIENT_SECRET": "${input:dept_client_secret}",
-        "DEPT_GOOGLE_ID_TOKEN": "${input:dept_google_id_token}",
-        "DEPT_EMPLOYEE_ID": "${input:dept_employee_id}",
-        "DEPT_CORPORATION_ID": "${input:dept_corporation_id}",
-        "DEPT_DEFAULT_BUDGET_ID": "${input:dept_default_budget_id}"
+        "DEPT_CLIENT_ID": "${input:deptClientId}",
+        "DEPT_CLIENT_SECRET": "${input:deptClientSecret}",
+        "DEPT_GOOGLE_ID_TOKEN": "${input:deptGoogleIdToken}",
+        "DEPT_EMPLOYEE_ID": "${input:deptEmployeeId}",
+        "DEPT_CORPORATION_ID": "${input:deptCorporationId}",
+        "DEPT_DEFAULT_BUDGET_ID": "${input:deptDefaultBudgetId}"
       }
     },
     "dept-hour-booking-docker": {

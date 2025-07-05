@@ -12,7 +12,11 @@ import fetch from "node-fetch";
 import dotenv from "dotenv";
 import { URLSearchParams } from "url";
 
-dotenv.config();
+// Only load .env file when not running in Docker
+// Docker Compose provides environment variables directly
+if (!process.env.DOCKER_CONTAINER) {
+  dotenv.config({ debug: false, override: false });
+}
 
 const {
   DEPT_CLIENT_ID,
