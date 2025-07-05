@@ -4,7 +4,9 @@ services:
   dept-hour-booking:
     build: .
     environment:
-      - DEPT_API_TOKEN=${DEPT_API_TOKEN}
+      - DEPT_CLIENT_ID=${DEPT_CLIENT_ID}
+      - DEPT_CLIENT_SECRET=${DEPT_CLIENT_SECRET}
+      - DEPT_GOOGLE_ID_TOKEN=${DEPT_GOOGLE_ID_TOKEN}
       - DEPT_EMPLOYEE_ID=${DEPT_EMPLOYEE_ID}
       - DEPT_CORPORATION_ID=${DEPT_CORPORATION_ID}
       - DEPT_DEFAULT_ACTIVITY_ID=${DEPT_DEFAULT_ACTIVITY_ID}
@@ -16,4 +18,4 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-    command: ["npm", "run", "dev:stdio"]
+    command: ["node", "lib/src/index.js"]
