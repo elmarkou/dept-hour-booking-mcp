@@ -10,12 +10,16 @@ import {
 import { z } from "zod";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
+import { URLSearchParams } from "url";
 
 dotenv.config();
 
 const {
-  DEPT_API_TOKEN,
+  DEPT_CLIENT_ID,
+  DEPT_CLIENT_SECRET,
+  DEPT_GOOGLE_ID_TOKEN,
   DEPT_API_BASE_URL = "https://deptapps-api.deptagency.com/public/api/v1",
+  DEPT_TOKEN_URL = "https://deptapps-api.deptagency.com/public/api/token",
   DEPT_EMPLOYEE_ID,
   DEPT_CORPORATION_ID,
   DEPT_DEFAULT_ACTIVITY_ID,
@@ -35,6 +39,122 @@ interface ApiOptions {
   method?: string;
   headers?: Record<string, string>;
   body?: string;
+}
+
+interface TokenResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  refresh_token: string;
+  client_id: string;
+  ".issued": string;
+  ".expires": string;
+}
+
+// Token management
+let currentAccessToken: string | null = null;
+let currentRefreshToken: string | null = null;
+let tokenExpiresAt: Date | null = null;
+
+// Function to get initial access token using Google OAuth
+async function getInitialAccessToken(): Promise<TokenResponse> {
+  if (!DEPT_CLIENT_ID || !DEPT_CLIENT_SECRET || !DEPT_GOOGLE_ID_TOKEN) {
+    throw new Error("Missing required credentials: DEPT_CLIENT_ID, DEPT_CLIENT_SECRET, or DEPT_GOOGLE_ID_TOKEN");
+  }
+
+  const params = new URLSearchParams({
+    client_id: DEPT_CLIENT_ID,
+    client_secret: DEPT_CLIENT_SECRET,
+    grant_type: 'google',
+    google_id_token: DEPT_GOOGLE_ID_TOKEN
+  });
+
+  try {
+    const response = await fetch(DEPT_TOKEN_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params.toString()
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Initial Google authentication failed: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
+    const tokenData = await response.json() as TokenResponse;
+    
+    // Update token variables
+    currentAccessToken = tokenData.access_token;
+    currentRefreshToken = tokenData.refresh_token;
+    tokenExpiresAt = new Date(Date.now() + (tokenData.expires_in * 1000));
+
+    console.error(`Google authentication successful. Expires at: ${tokenExpiresAt.toISOString()}`);
+    return tokenData;
+  } catch (error) {
+    console.error('Error during Google authentication:', error);
+    throw error;
+  }
+}
+
+// Function to refresh the access token
+async function refreshAccessToken(): Promise<string> {
+  // If we don't have a refresh token, get initial credentials
+  if (!currentRefreshToken) {
+    const tokenData = await getInitialAccessToken();
+    return tokenData.access_token;
+  }
+
+  if (!DEPT_CLIENT_ID || !DEPT_CLIENT_SECRET) {
+    throw new Error("Missing required credentials: DEPT_CLIENT_ID or DEPT_CLIENT_SECRET");
+  }
+
+  const params = new URLSearchParams({
+    client_id: DEPT_CLIENT_ID,
+    client_secret: DEPT_CLIENT_SECRET,
+    grant_type: 'refresh_token',
+    refresh_token: currentRefreshToken
+  });
+
+  try {
+    const response = await fetch(DEPT_TOKEN_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params.toString()
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Token refresh failed: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
+    const tokenData = await response.json() as TokenResponse;
+    
+    // Update token variables
+    currentAccessToken = tokenData.access_token;
+    currentRefreshToken = tokenData.refresh_token;
+    tokenExpiresAt = new Date(Date.now() + (tokenData.expires_in * 1000));
+
+    console.error(`Token refreshed successfully. Expires at: ${tokenExpiresAt.toISOString()}`);
+    return currentAccessToken;
+  } catch (error) {
+    console.error('Error refreshing token:', error);
+    throw error;
+  }
+}
+
+// Function to get a valid access token
+async function getValidAccessToken(): Promise<string> {
+  // Check if we have a valid token
+  if (currentAccessToken && tokenExpiresAt && tokenExpiresAt > new Date(Date.now() + 60000)) {
+    return currentAccessToken;
+  }
+
+  // Refresh the token
+  return await refreshAccessToken();
 }
 
 // Validation schemas
@@ -64,16 +184,14 @@ const SearchBudgetSchema = z.object({
 
 // API helper function
 async function deptApiCall(path: string, options: ApiOptions = {}) {
-  if (!DEPT_API_TOKEN) {
-    throw new Error("DEPT_API_TOKEN is required");
-  }
+  const accessToken = await getValidAccessToken();
 
   const baseUrl = DEPT_API_BASE_URL?.endsWith('/') ? DEPT_API_BASE_URL.slice(0, -1) : DEPT_API_BASE_URL;
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   const url = `${baseUrl}${cleanPath}`;
 
   const headers = {
-    'Authorization': `Bearer ${DEPT_API_TOKEN}`,
+    'Authorization': `Bearer ${accessToken}`,
     'Content-Type': 'application/json',
     ...(options.headers || {}),
   };
@@ -306,11 +424,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           `/budgets/search?searchTerm=${encodeURIComponent(validated.term)}&corporationId=${validated.corporationId || DEPT_CORPORATION_ID}`
         );
 
+        // Handle different response formats
+        const budgets = Array.isArray(result) ? result : (result.data || result.budgets || []);
+
         return {
           content: [
             {
               type: "text",
-              text: `🔍 Found ${result.length} budgets matching "${validated.term}"\n\n${result.map((budget: Budget, index: number) => `${index + 1}. ${budget.name || 'Unnamed Budget'} (ID: ${budget.id})`).join('\n')}\n\nFull results:\n${JSON.stringify(result, null, 2)}`,
+              text: `🔍 Found ${budgets.length} budgets matching "${validated.term}"\n\n${budgets.map((budget: Budget, index: number) => `${index + 1}. ${budget.name || 'Unnamed Budget'} (ID: ${budget.id})`).join('\n')}\n\nFull results:\n${JSON.stringify(result, null, 2)}`,
             },
           ],
         };

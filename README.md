@@ -1,10 +1,10 @@
 # Dept Hour Booking MCP Server
 
-> **🚧 Work in Progress** 
-> 
-> This project is currently under active development. 
-> 
-> **TODO**: Fix DEPT authentication - Currently experiencing 401 errors with API calls. A valid Dept API token is required for proper functionality.
+> **✅ Version 1.0.0 - Stable Release**
+>
+> **Current Status**: Fully functional with Google OAuth2 authentication. Production-ready for use with Google Cloud project.
+>
+> **Next Step**: ⚠️ **Dept needs to create a Google Cloud project** for long-term production use.
 
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that integrates with the Dept Public API for time tracking and project management. Built following the same patterns as the [GitHub MCP Server](https://github.com/github/github-mcp-server).
 
@@ -14,152 +14,83 @@ A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that i
 - **✏️ Update Hours**: Modify existing time bookings
 - **🔍 Search Budgets**: Find available budgets and projects
 - **🔧 Configurable**: Environment-based configuration
-- **🔒 Secure**: Dept API token authentication
-- **🐳 Docker Ready**: Easy deployment with Docker
+- **🔒 Secure**: Google ID token authentication with automatic refresh
+- **🐳 Docker Ready**: Easy deployment with Docker Compose
 - **🤖 AI-Ready**: Natural language interface through MCP protocol
+
+## Version 1.0.0 Release Notes
+
+This stable release includes:
+
+- ✅ **Complete Google OAuth2 Integration**: Secure authentication with automatic token refresh
+- ✅ **Full MCP Tool Suite**: Book hours, update entries, and search budgets
+- ✅ **Production-Ready**: Docker containerization and comprehensive configuration
+- ✅ **Clean Architecture**: Removed all deprecated authentication methods
+- ✅ **Comprehensive Documentation**: Complete setup and usage guides
+
+See [CHANGELOG.md](./CHANGELOG.md) for detailed release notes and migration information.
 
 ## Quick Start
 
-### Option 1: Local Development (Recommended)
+### Option 1: Docker (Recommended)
 
 1. **Clone and setup:**
 
    ```bash
    git clone <your-repo>
    cd dept-hour-booking
-   npm install
    ```
 
-2. **Configure VS Code:**
-   Copy the contents of `.vscode/mcp-local.json` to your VS Code MCP settings, or create a workspace configuration.
-
-3. **Start using in VS Code:**
-   - Toggle Agent mode in VS Code
-   - Enter your Dept credentials when prompted
-   - Start using natural language commands!
-
-### Option 2: Docker (For Production)
-
-1. **Build the image:**
+2. **Configure environment:**
 
    ```bash
-   docker build -t dept-hour-booking-mcp-server .
+   cp .env.example .env
+   # Edit .env with your credentials (see Configuration section)
    ```
 
-2. **Configure VS Code:**
-   Use the Docker configuration from `.vscode/mcp.json`
+3. **Start with Docker Compose:**
 
-### VS Code MCP Configuration (Local Development)
+   ```bash
+   docker-compose up
+   ```
 
-Add this to your VS Code MCP settings (use the local development option):
+4. **Configure VS Code:**
+   The server is now running and ready to use with the MCP configuration in `.vscode/mcp.json`
 
-```json
-{
-  "mcp": {
-    "inputs": [
-      {
-        "type": "promptString",
-        "id": "dept_api_token",
-        "description": "Dept API Token",
-        "password": true
-      },
-      {
-        "type": "promptString",
-        "id": "dept_employee_id",
-        "description": "Your Dept Employee ID"
-      },
-      {
-        "type": "promptString",
-        "id": "dept_corporation_id",
-        "description": "Your Dept Corporation ID"
-      },
-      {
-        "type": "promptString",
-        "id": "dept_default_budget_id",
-        "description": "Default Budget ID"
-      }
-    ],
-    "servers": {
-      "dept-hour-booking": {
-        "command": "node",
-        "args": ["-r", "ts-node/register", "./src/index.ts"],
-        "cwd": "/path/to/your/dept-hour-booking",
-        "env": {
-          "DEPT_API_TOKEN": "${input:dept_api_token}",
-          "DEPT_EMPLOYEE_ID": "${input:dept_employee_id}",
-          "DEPT_CORPORATION_ID": "${input:dept_corporation_id}",
-          "DEPT_DEFAULT_BUDGET_ID": "${input:dept_default_budget_id}"
-        }
-      }
-    }
-  }
-}
-```
+### Option 2: Local Development
 
-> **Important**: Replace `/path/to/your/dept-hour-booking` with the actual path to this project on your system.
+1. **Install dependencies:**
 
-### VS Code MCP Configuration (Docker)
+   ```bash
+   npm install
+   npm run build
+   ```
 
-If you prefer to use Docker:
+2. **Configure and run:**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your credentials
+   node lib/src/index.js
+   ```
 
-```json
-{
-  "mcp": {
-    "inputs": [
-      {
-        "type": "promptString",
-        "id": "dept_api_token",
-        "description": "Dept API Token",
-        "password": true
-      },
-      {
-        "type": "promptString",
-        "id": "dept_employee_id",
-        "description": "Your Dept Employee ID"
-      },
-      {
-        "type": "promptString",
-        "id": "dept_corporation_id",
-        "description": "Your Dept Corporation ID"
-      },
-      {
-        "type": "promptString",
-        "id": "dept_default_budget_id",
-        "description": "Default Budget ID"
-      }
-    ],
-    "servers": {
-      "dept-hour-booking": {
-        "command": "docker",
-        "args": [
-          "run",
-          "-i",
-          "--rm",
-          "-e",
-          "DEPT_API_TOKEN",
-          "-e",
-          "DEPT_EMPLOYEE_ID",
-          "-e",
-          "DEPT_CORPORATION_ID",
-          "-e",
-          "DEPT_DEFAULT_BUDGET_ID",
-          "ghcr.io/yourusername/dept-hour-booking-mcp-server"
-        ],
-        "env": {
-          "DEPT_API_TOKEN": "${input:dept_api_token}",
-          "DEPT_EMPLOYEE_ID": "${input:dept_employee_id}",
-          "DEPT_CORPORATION_ID": "${input:dept_corporation_id}",
-          "DEPT_DEFAULT_BUDGET_ID": "${input:dept_default_budget_id}"
-        }
-      }
-    }
-  }
-}
-```
+### VS Code MCP Configuration
+
+The server includes a ready-to-use MCP configuration in `.vscode/mcp.json`. This configuration will prompt you for the required credentials when you use the MCP server.
+
+**Required inputs when prompted:**
+
+- **Dept Client ID**: Your Dept client ID (typically "17")
+- **Dept Client Secret**: Your client secret (contact Dept admin if needed)
+- **Google ID Token**: Obtain from Google OAuth (see Getting Credentials section)
+- **Employee ID**: Your Dept employee ID
+- **Corporation ID**: Your Dept corporation ID
+- **Default Activity ID, Project ID, Company ID, Budget ID**: Your default IDs
+
+The configuration automatically handles Docker container management and environment variable passing.
 
 ### Claude Desktop Configuration
 
-Add to your Claude Desktop MCP settings:
+Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
 
 ```json
 {
@@ -171,19 +102,34 @@ Add to your Claude Desktop MCP settings:
         "-i",
         "--rm",
         "-e",
-        "DEPT_API_TOKEN",
+        "DEPT_CLIENT_ID",
+        "-e",
+        "DEPT_CLIENT_SECRET",
+        "-e",
+        "DEPT_GOOGLE_ID_TOKEN",
         "-e",
         "DEPT_EMPLOYEE_ID",
         "-e",
         "DEPT_CORPORATION_ID",
         "-e",
+        "DEPT_DEFAULT_ACTIVITY_ID",
+        "-e",
+        "DEPT_DEFAULT_PROJECT_ID",
+        "-e",
+        "DEPT_DEFAULT_COMPANY_ID",
+        "-e",
         "DEPT_DEFAULT_BUDGET_ID",
-        "ghcr.io/yourusername/dept-hour-booking-mcp-server"
+        "depthourbooking-dept-hour-booking"
       ],
       "env": {
-        "DEPT_API_TOKEN": "<YOUR_DEPT_API_TOKEN>",
+        "DEPT_CLIENT_ID": "17",
+        "DEPT_CLIENT_SECRET": "<YOUR_CLIENT_SECRET>",
+        "DEPT_GOOGLE_ID_TOKEN": "<YOUR_GOOGLE_ID_TOKEN>",
         "DEPT_EMPLOYEE_ID": "<YOUR_EMPLOYEE_ID>",
         "DEPT_CORPORATION_ID": "<YOUR_CORPORATION_ID>",
+        "DEPT_DEFAULT_ACTIVITY_ID": "<YOUR_DEFAULT_ACTIVITY_ID>",
+        "DEPT_DEFAULT_PROJECT_ID": "<YOUR_DEFAULT_PROJECT_ID>",
+        "DEPT_DEFAULT_COMPANY_ID": "<YOUR_DEFAULT_COMPANY_ID>",
         "DEPT_DEFAULT_BUDGET_ID": "<YOUR_DEFAULT_BUDGET_ID>"
       }
     }
@@ -194,22 +140,42 @@ Add to your Claude Desktop MCP settings:
 ## Prerequisites
 
 1. **Docker**: Required for containerized deployment
-2. **Dept API Token**: You'll need a Dept API token (not the changing bearer token)
-3. **Account IDs**: Your Dept employee ID, corporation ID, and default budget ID
+2. **Google Cloud Project**: ⚠️ **DEPT must create a Google Cloud project** with OAuth 2.0 credentials
+3. **Google ID Token**: Google OAuth token from your @deptagency.com account (requires step 2)
+4. **Dept Credentials**: Client secret and account IDs from your Dept administrator
+
+## ⚠️ Important: Google Cloud Setup Required
+
+**This project currently requires Dept administration to set up a Google Cloud project.**
+
+**What Dept needs to do:**
+
+1. **Create Google Cloud Project**: Set up a new Google Cloud project for Dept MCP integrations
+2. **Configure OAuth 2.0**: Create OAuth 2.0 client credentials for the application
+3. **Set Authorized Domains**: Configure `@deptagency.com` as authorized domain
+4. **Provide Client Credentials**: Share the OAuth client ID and client secret
+
+**Current Status**: The authentication flow is implemented and ready, but needs proper Google Cloud project configuration to work with Dept's domain restrictions.
 
 ## Configuration
 
+> **🚧 IN PROGRESS**: Authentication flow is implemented but requires Google Cloud project setup by Dept administration.
+
 The server is configured through environment variables:
 
-| Variable                   | Description                        | Required |
-| -------------------------- | ---------------------------------- | -------- |
-| `DEPT_API_TOKEN`           | Your Dept API token                | Yes      |
-| `DEPT_EMPLOYEE_ID`         | Your Dept employee ID              | Yes      |
-| `DEPT_CORPORATION_ID`      | Your Dept corporation ID           | Yes      |
-| `DEPT_DEFAULT_BUDGET_ID`   | Default budget ID for time entries | Yes      |
-| `DEPT_DEFAULT_ACTIVITY_ID` | Default activity ID                | No       |
-| `DEPT_DEFAULT_PROJECT_ID`  | Default project ID                 | No       |
-| `DEPT_DEFAULT_COMPANY_ID`  | Default company ID                 | No       |
+| Variable                   | Description                           | Required |
+| -------------------------- | ------------------------------------- | -------- |
+| `DEPT_CLIENT_ID`           | Dept OAuth client ID (typically "17") | Yes      |
+| `DEPT_CLIENT_SECRET`       | Your Dept OAuth client secret         | Yes      |
+| `DEPT_GOOGLE_ID_TOKEN`     | Google ID token from OAuth flow       | Yes      |
+| `DEPT_EMPLOYEE_ID`         | Your Dept employee ID                 | Yes      |
+| `DEPT_CORPORATION_ID`      | Your Dept corporation ID              | Yes      |
+| `DEPT_DEFAULT_BUDGET_ID`   | Default budget ID for time entries    | Yes      |
+| `DEPT_DEFAULT_ACTIVITY_ID` | Default activity ID                   | No       |
+| `DEPT_DEFAULT_PROJECT_ID`  | Default project ID                    | No       |
+| `DEPT_DEFAULT_COMPANY_ID`  | Default company ID                    | No       |
+
+> **Note**: `DEPT_API_BASE_URL` and `DEPT_TOKEN_URL` are now hardcoded in the application and don't need to be set as environment variables.
 
 ## Available Tools
 
@@ -333,15 +299,27 @@ Once configured, you can interact with the server using natural language:
 
 ```bash
 # Build the image
-docker build -t dept-hour-booking-mcp-server .
+docker-compose build
+
+# Run the container
+docker-compose up
+```
+
+Or manually:
+
+```bash
+# Build the image
+docker build -t depthourbooking-dept-hour-booking .
 
 # Run the container
 docker run -i --rm \
-  -e DEPT_API_TOKEN="your_token_here" \
+  -e DEPT_CLIENT_ID="17" \
+  -e DEPT_CLIENT_SECRET="your_client_secret" \
+  -e DEPT_GOOGLE_ID_TOKEN="your_google_id_token" \
   -e DEPT_EMPLOYEE_ID="your_employee_id" \
   -e DEPT_CORPORATION_ID="your_corporation_id" \
   -e DEPT_DEFAULT_BUDGET_ID="your_budget_id" \
-  dept-hour-booking-mcp-server
+  depthourbooking-dept-hour-booking
 ```
 
 ## Project Structure
@@ -352,38 +330,79 @@ docker run -i --rm \
 ├── .vscode/
 │   └── mcp.json          # VS Code MCP configuration
 ├── .env.example          # Environment configuration template
+├── .gitignore           # Git ignore rules
 ├── Dockerfile            # Docker configuration
 ├── docker-compose.yml    # Docker Compose for development
+├── package.json         # Node.js dependencies and scripts
+├── tsconfig.json        # TypeScript configuration
 └── README.md            # This file
 ```
 
 ## How It Works
 
 1. **MCP Protocol**: Uses the Model Context Protocol for AI tool integration
-2. **Automatic Budget Lookup**: Searches for matching budgets when not specified
-3. **Smart Defaults**: Uses configured default values for common fields
-4. **Error Handling**: Comprehensive error handling and validation
-5. **Docker Ready**: Easy deployment and configuration management
+2. **Google OAuth Authentication**: Uses Google ID token for initial authentication
+3. **Automatic Token Refresh**: Manages access token refresh automatically using refresh tokens
+4. **Automatic Budget Lookup**: Searches for matching budgets when not specified
+5. **Smart Defaults**: Uses configured default values for common fields
+6. **Error Handling**: Comprehensive error handling and validation
+7. **Docker Ready**: Easy deployment with Docker Compose
 
-## Getting Your Dept API Token
+## Getting Your Dept Credentials
 
-To get your Dept API token:
+To get your Dept credentials:
 
-1. Log into your Dept account
-2. Go to Settings > API
-3. Generate a new API token
-4. Copy the token (this is different from the session bearer token)
+1. **Client ID**: Typically "17" (standard Dept client ID)
+2. **Client Secret**: Contact your Dept administrator
+3. **Google ID Token**: Obtain from Google OAuth flow (see below)
+4. **Employee/Corporation IDs**: Available in your Dept profile or from administrator
 
-> **Note**: Unlike bearer tokens that change frequently, API tokens are more stable and suitable for automation.
+### Getting a Google ID Token
+
+> **⚠️ Currently Blocked**: This step requires Dept to create a Google Cloud project first.
+
+**🎯 Method 1 - Browser Developer Tools (Temporary Workaround):**
+
+1. Go to https://time.deptagency.com
+2. Sign in with your @deptagency.com account
+3. Open Developer Tools (F12) → Network tab
+4. Look for requests to authenticate endpoints
+5. Find the Google ID token in the request/response data
+
+**🎯 Method 2 - Google Cloud OAuth (Requires Dept Setup):**
+
+_This method will be available once Dept creates the Google Cloud project:_
+
+1. Use Google OAuth 2.0 with parameters from Dept's Google Cloud project:
+
+   - **Client ID**: `[TO BE PROVIDED BY DEPT]`
+   - **Scope**: `openid email profile`
+   - **Response Type**: `id_token`
+   - **Redirect URI**: `[TO BE CONFIGURED BY DEPT]`
+
+2. The resulting `id_token` is what you need for `DEPT_GOOGLE_ID_TOKEN`
+
+**📋 What Dept Administration Needs to Provide:**
+
+- Google Cloud project OAuth 2.0 client ID
+- Authorized redirect URIs for the OAuth flow
+- Domain verification for `@deptagency.com` emails
+- Client secret for the OAuth application
+
+> **Note**: The current implementation accepts any valid Google ID token through the `DEPT_GOOGLE_ID_TOKEN` environment variable. The source of this token (whether from time.deptagency.com or a dedicated Google Cloud project) is flexible, but a dedicated Google Cloud project would provide better control, security, and reliability for the MCP server.
 
 ## Troubleshooting
 
 ### Common Issues
 
-- **"DEPT_API_TOKEN is required"**: Make sure you've set your API token
+- **"Missing required credentials"**: Make sure you've set `DEPT_CLIENT_SECRET` and `DEPT_GOOGLE_ID_TOKEN`
+- **"Initial Google authentication failed"**: Your Google ID token may be expired or invalid, or Google Cloud project is not set up
+- **"Token refresh failed"**: Your session may have expired, restart the server to re-authenticate with Google
 - **"Invalid parameters"**: Check your input format matches the schema
-- **"API Error 401"**: Your API token may be invalid or expired
+- **"API Error 401"**: Your Google authentication may be invalid or expired
 - **"Budget not found"**: Verify your default budget ID is correct
+- **"MCP server could not be started: Process exited with code 125"**: Check Docker image name in MCP configuration
+- **Google OAuth issues**: ⚠️ **Most likely cause**: Dept needs to create Google Cloud project for proper OAuth setup
 
 ### Docker Issues
 

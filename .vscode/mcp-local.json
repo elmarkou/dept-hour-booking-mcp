@@ -2,8 +2,20 @@
   "inputs": [
     {
       "type": "promptString",
-      "id": "dept_api_token",
-      "description": "Dept API Token",
+      "id": "dept_client_id",
+      "description": "Dept Client ID",
+      "password": true
+    },
+    {
+      "type": "promptString",
+      "id": "dept_client_secret",
+      "description": "Dept Client Secret",
+      "password": true
+    },
+    {
+      "type": "promptString",
+      "id": "dept_google_id_token",
+      "description": "Google ID Token (from Google OAuth)",
       "password": true
     },
     {
@@ -28,7 +40,9 @@
       "args": ["-r", "ts-node/register", "./src/index.ts"],
       "cwd": "/Users/Elmar/mcpServers/Dept Hourbooking",
       "env": {
-        "DEPT_API_TOKEN": "${input:dept_api_token}",
+        "DEPT_CLIENT_ID": "${input:dept_client_id}",
+        "DEPT_CLIENT_SECRET": "${input:dept_client_secret}",
+        "DEPT_GOOGLE_ID_TOKEN": "${input:dept_google_id_token}",
         "DEPT_EMPLOYEE_ID": "${input:dept_employee_id}",
         "DEPT_CORPORATION_ID": "${input:dept_corporation_id}",
         "DEPT_DEFAULT_BUDGET_ID": "${input:dept_default_budget_id}"
@@ -41,7 +55,11 @@
         "-i",
         "--rm",
         "-e",
-        "DEPT_API_TOKEN",
+        "DEPT_CLIENT_ID",
+        "-e",
+        "DEPT_CLIENT_SECRET",
+        "-e",
+        "DEPT_GOOGLE_ID_TOKEN",
         "-e",
         "DEPT_EMPLOYEE_ID",
         "-e",
@@ -51,7 +69,9 @@
         "dept-hour-booking-mcp-server"
       ],
       "env": {
-        "DEPT_API_TOKEN": "${input:dept_api_token}",
+        "DEPT_CLIENT_ID": "${input:dept_client_id}",
+        "DEPT_CLIENT_SECRET": "${input:dept_client_secret}",
+        "DEPT_GOOGLE_ID_TOKEN": "${input:dept_google_id_token}",
         "DEPT_EMPLOYEE_ID": "${input:dept_employee_id}",
         "DEPT_CORPORATION_ID": "${input:dept_corporation_id}",
         "DEPT_DEFAULT_BUDGET_ID": "${input:dept_default_budget_id}"

@@ -1,7 +1,7 @@
 {
   "name": "depthourbooking",
-  "version": "0.0.1",
-  "description": "My MCP Server",
+  "version": "1.0.0",
+  "description": "Dept Hour Booking MCP Server - Google OAuth2 authenticated time tracking integration",
   "type": "module",
   "main": "./lib/src/index.js",
   "scripts": {
@@ -11,6 +11,7 @@
     "start": "node ./lib/src/index.js",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
+    "auth:google": "node lib/scripts/extract-token.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
