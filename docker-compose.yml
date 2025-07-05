@@ -4,6 +4,7 @@ services:
   dept-hour-booking:
     build: .
     environment:
+      - DOCKER_CONTAINER=true
       - DEPT_CLIENT_ID=${DEPT_CLIENT_ID}
       - DEPT_CLIENT_SECRET=${DEPT_CLIENT_SECRET}
       - DEPT_GOOGLE_ID_TOKEN=${DEPT_GOOGLE_ID_TOKEN}
