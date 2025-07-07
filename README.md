@@ -1,74 +1,41 @@
 # Dept Hour Booking MCP Server
 
-> **✅ Version 1.0.2 - Latest Release**
+> **✅ Version 1.0.3 - Latest Release**
 >
-> **Current Status**: Fully functional with Google OAuth2 authen### Claude Desktop Configuration
-
-Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
-
-#### Option 1: Docker Hub (Easiest - No Build Required) ⭐⭐⭐
-
-```json
-{
-  "mcpServers": {
-    "dept-hour-booking": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "-e",
-        "DEPT_CLIENT_ID=17",
-        "-e",
-        "DEPT_CLIENT_SECRET=<YOUR_CLIENT_SECRET>",
-        "-e",
-        "DEPT_GOOGLE_ID_TOKEN=<YOUR_GOOGLE_ID_TOKEN>",
-        "-e",
-        "DEPT_EMPLOYEE_ID=<YOUR_EMPLOYEE_ID>",
-        "-e",
-        "DEPT_CORPORATION_ID=<YOUR_CORPORATION_ID>",
-        "-e",
-        "DEPT_DEFAULT_ACTIVITY_ID=<YOUR_DEFAULT_ACTIVITY_ID>",
-        "-e",
-        "DEPT_DEFAULT_PROJECT_ID=<YOUR_DEFAULT_PROJECT_ID>",
-        "-e",
-        "DEPT_DEFAULT_COMPANY_ID=<YOUR_DEFAULT_COMPANY_ID>",
-        "-e",
-        "DEPT_DEFAULT_BUDGET_ID=<YOUR_DEFAULT_BUDGET_ID>",
-        "-e",
-        "DOCKER_CONTAINER=true",
-        "elmarkou/dept-hourbooking:latest"
-      ]
-    }
-  }
-}
-```
-
-#### Option 2: Local Docker Build (Requires repository clone)
-
-````json
-{
-  "mcpServers": {
-    "dept-hour-booking": {
-      "command": "docker-compose",
-      "args": ["run", "--rm", "-T", "dept-hour-booking"],oduction-ready for use with Google Cloud project.
+> **Current Status**: Fully functional with Google OAuth2 authentication and bulk booking capabilities.
 >
-> **Latest Update**: Zero-setup configuration with portable Docker auto-build.
+> **Latest Update**: Added bulk hours booking feature for efficient multi-day time entry.
 
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that integrates with the Dept Public API for time tracking and project management. Built following the same patterns as the [GitHub MCP Server](https://github.com/github/github-mcp-server).
 
 ## Features
 
-- **📝 Book Hours**: Create time entries with automatic budget lookup
+- **📝 Book Hours**: Create individual time entries with automatic budget lookup
+- **📅 Bulk Book Hours**: Efficiently book hours across multiple days with date range and weekday selection
 - **✏️ Update Hours**: Modify existing time bookings with proper data preservation
 - **🔍 Search Budgets**: Find available budgets and projects
-- **� Get Hour Details**: Retrieve individual time booking records
-- **�🔧 Configurable**: Environment-based configuration
+- **📋 Check Booked Hours**: View time entries for specific date ranges
+- **📊 Get Hour Details**: Retrieve individual time booking records
+- **🔧 Configurable**: Environment-based configuration
 - **🔒 Secure**: Google ID token authentication with automatic refresh
 - **🐳 Docker Ready**: Easy deployment with Docker Compose
 - **🤖 AI-Ready**: Natural language interface through MCP protocol
+- **⚡ One-Click Install**: Easy installation via VS Code Copilot MCP Extension
 
-## Version 1.0.2 Release Notes
+## Version 1.0.3 Release Notes
+
+This update introduces efficient bulk time booking capabilities:
+
+- 🚀 **NEW: Bulk Hours Booking**: Book hours across multiple days in a single operation
+- 📅 **Date Range Support**: Specify start and end dates for bulk booking periods
+- 📆 **Weekday Selection**: Choose which weekdays to include (Monday-Friday by default)
+- ⚡ **Efficient API Usage**: Single API call instead of multiple individual bookings
+- 🔧 **Smart Defaults**: Automatic budget lookup and sensible weekday defaults
+- 📝 **Flexible Descriptions**: Single description applied to all bookings in the range
+
+### Previous Versions
+
+#### Version 1.0.2 Release Notes
 
 This update makes the repository fully portable and zero-setup:
 
@@ -93,14 +60,34 @@ See [CHANGELOG.md](./CHANGELOG.md) for detailed release notes and migration info
 
 > **✅ ZERO SETUP REQUIRED**: Multiple options available - choose what works best for you!
 
-### VS Code MCP (Recommended)
+### 🚀 Easiest Installation: VS Code Extension
+
+**For the simplest setup experience:**
+
+1. **Install the MCP Extension:**
+
+   - Install the [Copilot MCP Extension](https://marketplace.visualstudio.com/items?itemName=AutomataLabs.copilot-mcp) from the VS Code Marketplace
+   - Or search for "Copilot MCP" in VS Code Extensions
+
+2. **Install this MCP Server:**
+
+   - The extension provides a user-friendly interface to install and configure MCP servers
+   - Simply search for "Dept Hour Booking" or use the repository URL
+   - The extension handles all the configuration automatically
+
+3. **No manual setup required** - the extension manages everything for you!
+
+### VS Code MCP (Manual Configuration)
 
 **⚡ FASTEST: Docker Hub Option**
+
 1. **Clone the repository:**
    ```bash
    git clone <your-repo>
    cd dept-hour-booking
-````
+   ```
+
+`````
 
 2. **Use the Docker Hub configuration:**
    - Copy `.vscode/mcp-dockerhub.json` to `.vscode/mcp.json`
@@ -298,7 +285,7 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
     }
   }
 }
-````
+`````
 
 #### Option 3: Node.js Direct (Requires manual build)
 
@@ -397,6 +384,46 @@ Book time entry in Dept system.
 }
 ```
 
+### `book_hours_bulk`
+
+Book time entries across multiple days in a single operation.
+
+**Parameters:**
+
+- `hours` (number): Hours to book per day (0.1-24)
+- `startDate` (string): Start date in YYYY-MM-DD format
+- `endDate` (string): End date in YYYY-MM-DD format
+- `description` (string): Work description for all entries
+- `budgetId` (string, optional): Budget ID (auto-searches if not provided)
+- `weekdays` (object, optional): Which weekdays to include (defaults to Monday-Friday)
+  - `monday` (boolean): Include Monday (default: true)
+  - `tuesday` (boolean): Include Tuesday (default: true)
+  - `wednesday` (boolean): Include Wednesday (default: true)
+  - `thursday` (boolean): Include Thursday (default: true)
+  - `friday` (boolean): Include Friday (default: true)
+  - `saturday` (boolean): Include Saturday (default: false)
+  - `sunday` (boolean): Include Sunday (default: false)
+
+**Example:**
+
+```json
+{
+  "hours": 8,
+  "startDate": "2025-07-07",
+  "endDate": "2025-07-11",
+  "description": "Weekly development work for project NDH-2286",
+  "weekdays": {
+    "monday": true,
+    "tuesday": true,
+    "wednesday": true,
+    "thursday": true,
+    "friday": true,
+    "saturday": false,
+    "sunday": false
+  }
+}
+```
+
 ### `update_hours`
 
 Update existing time entry.
@@ -456,10 +483,12 @@ Get details of a specific booked hour entry by ID.
 Once configured, you can interact with the server using natural language:
 
 - _"Book 2 hours for NDH-2286 development work today"_
+- _"Book 8 hours per day for this week working on project development"_
 - _"Search for budgets containing 'Medela'"_
 - _"Update booking 12345 to 3 hours"_
 - _"Show me details for time entry 12345"_
 - _"Find all available Canva projects"_
+- _"Book 6 hours daily from Monday to Friday for sprint work"_
 
 ## Local Development
 
