@@ -1,32 +1,34 @@
 # Dept Hour Booking MCP Server
 
-> **✅ Version 1.0.0 - Stable Release**
+> **✅ Version 1.0.1 - Latest Release**
 >
 > **Current Status**: Fully functional with Google OAuth2 authentication. Production-ready for use with Google Cloud project.
 >
-> **Next Step**: ⚠️ **Dept needs to create a Google Cloud project** for long-term production use.
+> **Latest Update**: Critical bug fix for data corruption in time entry updates.
 
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that integrates with the Dept Public API for time tracking and project management. Built following the same patterns as the [GitHub MCP Server](https://github.com/github/github-mcp-server).
 
 ## Features
 
 - **📝 Book Hours**: Create time entries with automatic budget lookup
-- **✏️ Update Hours**: Modify existing time bookings
+- **✏️ Update Hours**: Modify existing time bookings with proper data preservation
 - **🔍 Search Budgets**: Find available budgets and projects
-- **🔧 Configurable**: Environment-based configuration
+- **� Get Hour Details**: Retrieve individual time booking records
+- **�🔧 Configurable**: Environment-based configuration
 - **🔒 Secure**: Google ID token authentication with automatic refresh
 - **🐳 Docker Ready**: Easy deployment with Docker Compose
 - **🤖 AI-Ready**: Natural language interface through MCP protocol
 
-## Version 1.0.0 Release Notes
+## Version 1.0.1 Release Notes
 
-This stable release includes:
+This critical update includes:
 
-- ✅ **Complete Google OAuth2 Integration**: Secure authentication with automatic token refresh
-- ✅ **Full MCP Tool Suite**: Book hours, update entries, and search budgets
-- ✅ **Production-Ready**: Docker containerization and comprehensive configuration
-- ✅ **Clean Architecture**: Removed all deprecated authentication methods
-- ✅ **Comprehensive Documentation**: Complete setup and usage guides
+- 🔥 **CRITICAL BUG FIX**: Fixed data corruption in `update_hours` endpoint
+- ✅ **Proper PATCH Semantics**: Time entry updates now preserve unmodified fields
+- ✅ **New Tool**: `get_booked_hour` for retrieving individual time booking records
+- ✅ **Enhanced Docker Management**: Improved container cleanup and duplicate detection
+- ✅ **Better Error Handling**: More robust validation and user feedback
+- ✅ **Data Integrity**: Eliminated hardcoded fallback values that corrupted existing data
 
 See [CHANGELOG.md](./CHANGELOG.md) for detailed release notes and migration information.
 
@@ -238,6 +240,22 @@ Search for budgets by term.
 }
 ```
 
+### `get_booked_hour`
+
+Get details of a specific booked hour entry by ID.
+
+**Parameters:**
+
+- `id` (string): Time entry ID to retrieve
+
+**Example:**
+
+```json
+{
+  "id": "12345"
+}
+```
+
 ## Natural Language Usage
 
 Once configured, you can interact with the server using natural language:
@@ -245,6 +263,7 @@ Once configured, you can interact with the server using natural language:
 - _"Book 2 hours for NDH-2286 development work today"_
 - _"Search for budgets containing 'Medela'"_
 - _"Update booking 12345 to 3 hours"_
+- _"Show me details for time entry 12345"_
 - _"Find all available Canva projects"_
 
 ## Local Development
