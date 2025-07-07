@@ -194,6 +194,28 @@ const BookHoursSchema = z.object({
   corporationId: z.string().optional(),
 });
 
+const BookHoursBulkSchema = z.object({
+  hours: z.number().min(0.1).max(24),
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  description: z.string().min(1),
+  budgetId: z.string().optional(),
+  employeeId: z.string().optional(),
+  activityId: z.string().optional(),
+  projectId: z.string().optional(),
+  companyId: z.string().optional(),
+  corporationId: z.string().optional(),
+  weekdays: z.object({
+    monday: z.boolean().optional().default(true),
+    tuesday: z.boolean().optional().default(true),
+    wednesday: z.boolean().optional().default(true),
+    thursday: z.boolean().optional().default(true),
+    friday: z.boolean().optional().default(true),
+    saturday: z.boolean().optional().default(false),
+    sunday: z.boolean().optional().default(false),
+  }).optional().default({})
+});
+
 const UpdateHoursSchema = z.object({
   id: z.string(),
   hours: z.number().min(0.1).max(24).optional(),
@@ -286,6 +308,54 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
           },
           required: ["hours", "date", "description"],
+        },
+      },
+      {
+        name: "book_hours_bulk",
+        description: "Book time entries in bulk across multiple days in Dept system",
+        inputSchema: {
+          type: "object",
+          properties: {
+            hours: {
+              type: "number",
+              description: "Number of hours to book per day (0.1-24)",
+              minimum: 0.1,
+              maximum: 24,
+            },
+            startDate: {
+              type: "string",
+              description: "Start date in YYYY-MM-DD format",
+              pattern: "^\\d{4}-\\d{2}-\\d{2}$",
+            },
+            endDate: {
+              type: "string",
+              description: "End date in YYYY-MM-DD format",
+              pattern: "^\\d{4}-\\d{2}-\\d{2}$",
+            },
+            description: {
+              type: "string",
+              description: "Description of the work performed",
+            },
+            budgetId: {
+              type: "string",
+              description: "Budget ID (optional, will auto-search if not provided)",
+            },
+            weekdays: {
+              type: "object",
+              description: "Which weekdays to include (optional, defaults to Monday-Friday)",
+              properties: {
+                monday: { type: "boolean", default: true },
+                tuesday: { type: "boolean", default: true },
+                wednesday: { type: "boolean", default: true },
+                thursday: { type: "boolean", default: true },
+                friday: { type: "boolean", default: true },
+                saturday: { type: "boolean", default: false },
+                sunday: { type: "boolean", default: false },
+              },
+              additionalProperties: false,
+            },
+          },
+          required: ["hours", "startDate", "endDate", "description"],
         },
       },
       {
@@ -434,6 +504,142 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             {
               type: "text",
               text: `✅ Successfully booked ${validated.hours} hours for ${validated.date}\n\nDetails:\n- Description: ${validated.description}\n- Budget ID: ${budgetId}\n- Booking ID: ${result.id || 'N/A'}\n\nResult: ${JSON.stringify(result, null, 2)}`,
+            },
+          ],
+        };
+      }
+
+      case "book_hours_bulk": {
+        const validated = BookHoursBulkSchema.parse(args);
+        
+        let budgetId = validated.budgetId;
+        
+        // Auto-search for budget if not provided
+        if (!budgetId && validated.description) {
+          try {
+            const searchData = await deptApiCall(
+              `/budgets/search?searchTerm=${encodeURIComponent(validated.description)}&corporationId=${validated.corporationId || DEPT_CORPORATION_ID}`
+            );
+            
+            if (searchData && searchData.length > 0) {
+              budgetId = searchData[0].id;
+            } else {
+              budgetId = DEPT_DEFAULT_BUDGET_ID;
+            }
+          } catch (error) {
+            console.error('Budget search failed:', error);
+            budgetId = DEPT_DEFAULT_BUDGET_ID;
+          }
+        }
+        
+        if (!budgetId) {
+          throw new Error('Budget ID is required and could not be determined');
+        }
+
+        // Generate list of target dates based on weekday selection
+        const generateDates = (startDate: string, endDate: string, weekdays: Record<string, boolean>) => {
+          const dates = [];
+          const start = new Date(startDate);
+          const end = new Date(endDate);
+          const current = new Date(start);
+
+          // Map weekday names to JS day numbers (0=Sunday, 1=Monday, etc.)
+          const dayMap = {
+            sunday: 0,
+            monday: 1,
+            tuesday: 2,
+            wednesday: 3,
+            thursday: 4,
+            friday: 5,
+            saturday: 6
+          };
+
+          const selectedDays = Object.entries(weekdays || {})
+            .filter(([, selected]) => selected)
+            .map(([day]) => dayMap[day as keyof typeof dayMap]);
+
+          // Default to Monday-Friday if no days selected
+          if (selectedDays.length === 0) {
+            selectedDays.push(1, 2, 3, 4, 5); // Mon-Fri
+          }
+
+          while (current <= end) {
+            if (selectedDays.includes(current.getDay())) {
+              dates.push(current.toISOString().split('T')[0]);
+            }
+            current.setDate(current.getDate() + 1);
+          }
+
+          return dates;
+        };
+
+        const targetDates = generateDates(validated.startDate, validated.endDate, validated.weekdays);
+
+        if (targetDates.length === 0) {
+          throw new Error('No valid dates found for the specified range and weekday selection');
+        }
+
+        // Convert weekdays to the API format (1=Monday, 2=Tuesday, etc.)
+        const daysMap: Record<string, number> = {
+          monday: 1,
+          tuesday: 2,
+          wednesday: 3,
+          thursday: 4,
+          friday: 5,
+          saturday: 6,
+          sunday: 0
+        };
+
+        const repeatDays: Record<string, boolean> = {};
+        Object.entries(validated.weekdays || {}).forEach(([day, selected]) => {
+          if (selected && daysMap[day] !== undefined) {
+            repeatDays[daysMap[day].toString()] = true;
+          }
+        });
+
+        // Default to Monday-Friday if no days specified
+        if (Object.keys(repeatDays).length === 0) {
+          repeatDays["1"] = true; // Monday
+          repeatDays["2"] = true; // Tuesday
+          repeatDays["3"] = true; // Wednesday
+          repeatDays["4"] = true; // Thursday
+          repeatDays["5"] = true; // Friday
+        }
+
+        const bulkBookingData = {
+          employeeId: parseInt(validated.employeeId || DEPT_EMPLOYEE_ID || '0'),
+          hours: validated.hours.toString(),
+          date: validated.startDate,
+          description: validated.description,
+          repeat: {
+            days: repeatDays,
+            until: `${validated.endDate}T22:00:00.000Z`
+          },
+          isLocked: false,
+          activityId: parseInt(validated.activityId || DEPT_DEFAULT_ACTIVITY_ID || '0'),
+          corporationId: parseInt(validated.corporationId || DEPT_CORPORATION_ID || '0'),
+          companyId: parseInt(validated.companyId || DEPT_DEFAULT_COMPANY_ID || '0'),
+          projectId: parseInt(validated.projectId || DEPT_DEFAULT_PROJECT_ID || '0'),
+          budgetId: parseInt(budgetId || '0'),
+          dates: targetDates,
+        };
+
+        const result = await deptApiCall('/bookedhours/bulk', {
+          method: 'POST',
+          body: JSON.stringify(bulkBookingData),
+        });
+
+        const dayNames = Object.entries(validated.weekdays || {})
+          .filter(([, selected]) => selected)
+          .map(([day]) => day.charAt(0).toUpperCase() + day.slice(1));
+
+        const selectedDaysText = dayNames.length > 0 ? dayNames.join(', ') : 'Monday-Friday';
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: `✅ Successfully booked ${validated.hours} hours per day in bulk\n\nDetails:\n- Date Range: ${validated.startDate} to ${validated.endDate}\n- Days: ${selectedDaysText}\n- Total Days: ${targetDates.length}\n- Total Hours: ${validated.hours * targetDates.length}\n- Description: ${validated.description}\n- Budget ID: ${budgetId}\n\nDates booked: ${targetDates.join(', ')}\n\nResult: ${JSON.stringify(result, null, 2)}`,
             },
           ],
         };
