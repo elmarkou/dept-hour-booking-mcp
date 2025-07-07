@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2025-07-07
+
+### Fixed
+
+- **ZERO SETUP REQUIRED**: Docker configuration now automatically builds images on first use
+- Removed hardcoded paths from MCP configurations for universal compatibility
+- Fixed "Unable to find image" error when installing via VS Code MCP/Copilot
+
+### Changed
+
+- MCP configurations now use `${workspaceFolder}` for portable paths
+- Simplified installation process - just clone and use
+- Updated documentation to reflect automatic setup
+- Selective .gitignore for VS Code files (keeps important MCP configs, excludes personal settings)
+
 ## [1.0.1] - 2025-07-07
 
 ### Fixed

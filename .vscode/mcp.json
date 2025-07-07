@@ -52,12 +52,7 @@
   "servers": {
     "dept-hour-booking": {
       "command": "docker-compose",
-      "args": [
-        "run",
-        "--rm",
-        "-T",
-        "dept-hour-booking"
-      ],
+      "args": ["run", "--rm", "-T", "dept-hour-booking"],
       "cwd": "${workspaceFolder}",
       "env": {
         "DEPT_CLIENT_ID": "${input:deptClientId}",

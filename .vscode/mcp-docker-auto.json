@@ -51,9 +51,12 @@
   ],
   "servers": {
     "dept-hour-booking": {
-      "command": "node",
-      "args": ["./lib/src/index.js"],
-      "cwd": "${workspaceFolder}",
+      "command": "bash",
+      "args": [
+        "-c",
+        "cd \"$(dirname \"$0\")\" && IMAGE_NAME='depthourbooking-dept-hour-booking:latest' && if ! docker image inspect \"$IMAGE_NAME\" &>/dev/null; then echo 'Building Docker image...' && if command -v docker-compose &>/dev/null; then docker-compose build; else docker build -t \"$IMAGE_NAME\" .; fi; fi && exec docker run -i --rm -e \"DEPT_CLIENT_ID=${DEPT_CLIENT_ID}\" -e \"DEPT_CLIENT_SECRET=${DEPT_CLIENT_SECRET}\" -e \"DEPT_GOOGLE_ID_TOKEN=${DEPT_GOOGLE_ID_TOKEN}\" -e \"DEPT_EMPLOYEE_ID=${DEPT_EMPLOYEE_ID}\" -e \"DEPT_CORPORATION_ID=${DEPT_CORPORATION_ID}\" -e \"DEPT_DEFAULT_ACTIVITY_ID=${DEPT_DEFAULT_ACTIVITY_ID}\" -e \"DEPT_DEFAULT_PROJECT_ID=${DEPT_DEFAULT_PROJECT_ID}\" -e \"DEPT_DEFAULT_COMPANY_ID=${DEPT_DEFAULT_COMPANY_ID}\" -e \"DEPT_DEFAULT_BUDGET_ID=${DEPT_DEFAULT_BUDGET_ID}\" \"$IMAGE_NAME\""
+      ],
+      "cwd": "/Users/Elmar/mcpServers/Dept Hourbooking",
       "env": {
         "DEPT_CLIENT_ID": "${input:deptClientId}",
         "DEPT_CLIENT_SECRET": "${input:deptClientSecret}",

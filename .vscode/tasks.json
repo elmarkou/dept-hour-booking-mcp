@@ -46,7 +46,7 @@
         }
       },
       // remove this dependsOn if don't want to npm install each time
-      "dependsOn": [ "npm install" ]
+      "dependsOn": ["npm install"]
     },
     {
       "label": "Start MCP Inspector",
@@ -57,7 +57,7 @@
         "cwd": "${workspaceFolder}",
         "env": {
           "CLIENT_PORT": "5173",
-          "SERVER_PORT": "3000",
+          "SERVER_PORT": "3000"
         }
       },
       "problemMatcher": {
@@ -75,9 +75,7 @@
           "endsPattern": "Proxy server listening on port"
         }
       },
-      "dependsOn": [
-        "Start MCP Server"
-      ]
+      "dependsOn": ["Start MCP Server"]
     },
     {
       "label": "Open Agent Builder",
@@ -86,9 +84,7 @@
       "presentation": {
         "reveal": "never"
       },
-      "dependsOn": [
-        "Start MCP Server"
-      ],
+      "dependsOn": ["Start MCP Server"]
     },
     {
       "label": "Terminate All Tasks",
@@ -105,7 +101,7 @@
       "type": "command",
       "command": "ai-mlstudio.agentBuilder",
       "args": {
-        "initialMCPs": [ "local-server-depthourbooking" ],
+        "initialMCPs": ["local-server-depthourbooking"],
         "triggeredFrom": "vsc-tasks"
       }
     },

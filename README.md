@@ -1,10 +1,10 @@
 # Dept Hour Booking MCP Server
 
-> **✅ Version 1.0.1 - Latest Release**
+> **✅ Version 1.0.2 - Latest Release**
 >
 > **Current Status**: Fully functional with Google OAuth2 authentication. Production-ready for use with Google Cloud project.
 >
-> **Latest Update**: Critical bug fix for data corruption in time entry updates.
+> **Latest Update**: Zero-setup configuration with portable Docker auto-build.
 
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that integrates with the Dept Public API for time tracking and project management. Built following the same patterns as the [GitHub MCP Server](https://github.com/github/github-mcp-server).
 
@@ -19,16 +19,22 @@ A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that i
 - **🐳 Docker Ready**: Easy deployment with Docker Compose
 - **🤖 AI-Ready**: Natural language interface through MCP protocol
 
-## Version 1.0.1 Release Notes
+## Version 1.0.2 Release Notes
 
-This critical update includes:
+This update makes the repository fully portable and zero-setup:
+
+- 🎯 **ZERO SETUP REQUIRED**: Docker configuration automatically builds images on first use
+- 🔧 **Portable Configuration**: Removed hardcoded paths from MCP configurations
+- 🐳 **Auto-Build Docker**: Fixed "Unable to find image" error - now builds automatically
+- 📁 **Universal Compatibility**: Works out-of-the-box in any environment
+- 🔄 **Selective Git Tracking**: Only includes essential VS Code configs, excludes personal settings
+- 📝 **Simplified Installation**: Just clone and use - no manual setup required
+
+### Previous Version (1.0.1) Highlights
 
 - 🔥 **CRITICAL BUG FIX**: Fixed data corruption in `update_hours` endpoint
 - ✅ **Proper PATCH Semantics**: Time entry updates now preserve unmodified fields
 - ✅ **New Tool**: `get_booked_hour` for retrieving individual time booking records
-- ✅ **Enhanced Docker Management**: Improved container cleanup and duplicate detection
-- ✅ **Better Error Handling**: More robust validation and user feedback
-- ✅ **Data Integrity**: Eliminated hardcoded fallback values that corrupted existing data
 
 See [CHANGELOG.md](./CHANGELOG.md) for detailed release notes and migration information.
 
@@ -39,12 +45,14 @@ See [CHANGELOG.md](./CHANGELOG.md) for detailed release notes and migration info
 ### VS Code MCP (Recommended)
 
 1. **Clone the repository:**
+
    ```bash
    git clone <your-repo>
    cd dept-hour-booking
    ```
 
 2. **Use the MCP configuration:**
+
    - The `.vscode/mcp.json` configuration is ready to use
    - **No manual setup needed** - Docker will automatically build the image on first use
    - VS Code will prompt for your credentials when you first connect
@@ -76,6 +84,7 @@ npm install && npm run build
 The server includes two ready-to-use MCP configurations:
 
 #### Option 1: Docker-based (`.vscode/mcp.json`) - Recommended ⭐
+
 - **🔥 AUTOMATIC SETUP**: Builds Docker image automatically on first use
 - **✅ ZERO CONFIGURATION**: Just clone and use - no manual steps required
 - Uses `docker-compose` for automatic dependency management
@@ -83,6 +92,7 @@ The server includes two ready-to-use MCP configurations:
 - Perfect for Copilot installations and sharing
 
 #### Option 2: Node.js-based (`.vscode/mcp-nodejs.json`) - For Development
+
 - Uses Node.js directly, faster startup after initial build
 - More reliable for local VS Code integration
 - Easier debugging and development
@@ -91,13 +101,14 @@ The server includes two ready-to-use MCP configurations:
 **Both configurations will prompt you for credentials:**
 
 - **Dept Client ID**: Your Dept client ID (typically "17")
-- **Dept Client Secret**: Your client secret (contact Dept admin if needed)  
+- **Dept Client Secret**: Your client secret (contact Dept admin if needed)
 - **Google ID Token**: Obtain from Google OAuth (see Getting Credentials section)
 - **Employee ID**: Your Dept employee ID
 - **Corporation ID**: Your Dept corporation ID
 - **Default Activity ID, Project ID, Company ID, Budget ID**: Your default IDs
 
 **For first-time users:**
+
 1. Clone the repository
 2. Open in VS Code with MCP enabled
 3. The Docker configuration will automatically build everything on first use
@@ -108,17 +119,13 @@ The server includes two ready-to-use MCP configurations:
 Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
 
 #### Option 1: Docker-compose (Recommended - Auto-builds)
+
 ```json
 {
   "mcpServers": {
     "dept-hour-booking": {
       "command": "docker-compose",
-      "args": [
-        "run",
-        "--rm",
-        "-T",
-        "dept-hour-booking"
-      ],
+      "args": ["run", "--rm", "-T", "dept-hour-booking"],
       "cwd": "/absolute/path/to/your/dept-hour-booking",
       "env": {
         "DEPT_CLIENT_ID": "17",
@@ -137,6 +144,7 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
 ```
 
 #### Option 2: Node.js Direct (Requires manual build)
+
 ```json
 {
   "mcpServers": {
@@ -160,9 +168,10 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
 }
 ```
 
-**Notes**: 
+**Notes**:
+
 - Replace `/absolute/path/to/your/dept-hour-booking` with the actual absolute path where you cloned the repository
-- **Examples**: 
+- **Examples**:
   - macOS/Linux: `/Users/yourname/projects/dept-hour-booking` or `/home/yourname/dept-hour-booking`
   - Windows: `C:\\Users\\yourname\\projects\\dept-hour-booking`
 - **Option 1** automatically builds the Docker image if it doesn't exist (recommended)
