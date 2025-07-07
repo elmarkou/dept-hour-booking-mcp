@@ -1,6 +1,6 @@
 {
   "name": "depthourbooking",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Dept Hour Booking MCP Server - Google OAuth2 authenticated time tracking integration",
   "type": "module",
   "main": "./lib/src/index.js",

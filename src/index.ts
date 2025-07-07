@@ -15,7 +15,17 @@ import { URLSearchParams } from "url";
 // Only load .env file when not running in Docker
 // Docker Compose provides environment variables directly
 if (!process.env.DOCKER_CONTAINER) {
+  // Suppress dotenv output by temporarily redirecting console output
+  const originalConsoleLog = console.log;
+  const originalConsoleError = console.error;
+  console.log = () => {};
+  console.error = () => {};
+  
   dotenv.config({ debug: false, override: false });
+  
+  // Restore console output
+  console.log = originalConsoleLog;
+  console.error = originalConsoleError;
 }
 
 const {
@@ -36,6 +46,16 @@ const {
 interface Budget {
   id: string;
   name?: string;
+  [key: string]: unknown;
+}
+
+interface BookedHour {
+  id: string;
+  date: string;
+  hours: string | number;
+  description?: string;
+  projectName?: string;
+  budgetName?: string;
   [key: string]: unknown;
 }
 
@@ -186,6 +206,12 @@ const SearchBudgetSchema = z.object({
   corporationId: z.string().optional(),
 });
 
+const CheckBookedHoursSchema = z.object({
+  from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  employeeId: z.string().optional(),
+});
+
 // API helper function
 async function deptApiCall(path: string, options: ApiOptions = {}) {
   const accessToken = await getValidAccessToken();
@@ -220,7 +246,7 @@ async function deptApiCall(path: string, options: ApiOptions = {}) {
 const server = new Server(
   {
     name: "dept-hour-booking",
-    version: "1.0.0",
+    version: "1.0.1",
   },
   {
     capabilities: {
@@ -309,6 +335,44 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: ["term"],
         },
       },
+      {
+        name: "check_booked_hours",
+        description: "Check booked hours for a date range",
+        inputSchema: {
+          type: "object",
+          properties: {
+            from: {
+              type: "string",
+              description: "Start date in YYYY-MM-DD format",
+              pattern: "^\\d{4}-\\d{2}-\\d{2}$",
+            },
+            to: {
+              type: "string",
+              description: "End date in YYYY-MM-DD format",
+              pattern: "^\\d{4}-\\d{2}-\\d{2}$",
+            },
+            employeeId: {
+              type: "string",
+              description: "Employee ID (optional, uses default if not provided)",
+            },
+          },
+          required: ["from", "to"],
+        },
+      },
+      {
+        name: "get_booked_hour",
+        description: "Get details of a specific booked hour entry by ID",
+        inputSchema: {
+          type: "object",
+          properties: {
+            id: {
+              type: "string",
+              description: "ID of the time entry to retrieve",
+            },
+          },
+          required: ["id"],
+        },
+      },
     ],
   };
 });
@@ -378,44 +442,87 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case "update_hours": {
         const validated = UpdateHoursSchema.parse(args);
         
+        // Step 1: Fetch existing record to preserve unchanged fields
+        const existingRecord = await deptApiCall(`/bookedhours/${validated.id}`, {
+          method: 'GET',
+        });
+
+        if (!existingRecord) {
+          throw new Error(`Time booking with ID ${validated.id} not found`);
+        }
+
+        // Step 2: Create update data by merging existing record with provided changes
+        // Only update fields that are explicitly provided in the request
         const updateData = {
-          employeeId: parseInt(DEPT_EMPLOYEE_ID || '0'),
-          date: validated.date || "2025-07-04",
-          description: validated.description || "Updated work",
-          repeat: { days: {}, until: `${validated.date || '2025-07-04'}T22:00:00.000Z` },
-          isLocked: false,
+          // Core identifiers (preserved from existing)
+          employeeId: existingRecord.employeeId || parseInt(DEPT_EMPLOYEE_ID || '0'),
           id: parseInt(validated.id),
-          activityId: parseInt(DEPT_DEFAULT_ACTIVITY_ID || '0'),
-          activityName: "Implementation",
-          budgetId: parseInt(DEPT_DEFAULT_BUDGET_ID || '0'),
-          budgetName: "Default Budget",
-          companyId: parseInt(DEPT_DEFAULT_COMPANY_ID || '0'),
-          companyName: "Default Company",
-          employeeDisplayName: "Employee",
-          projectId: parseInt(DEPT_DEFAULT_PROJECT_ID || '0'),
-          projectName: "Default Project",
-          roleId: 33,
-          serviceDeskTicketNumber: null,
-          serviceDeskTicketPriority: "",
-          canEdit: true,
-          projectTaskId: null,
-          budgetGroupName: "Default Budget Group",
-          timeBookingTypeId: 1,
-          projectCategory: "Client",
-          hours: validated.hours?.toString() || "1",
-          dates: null,
+          
+          // Fields that can be updated (use provided value or preserve existing)
+          date: validated.date || existingRecord.date,
+          description: validated.description || existingRecord.description,
+          hours: validated.hours !== undefined ? validated.hours.toString() : existingRecord.hours?.toString(),
+          
+          // Preserve all other existing fields exactly as they were
+          repeat: existingRecord.repeat || { 
+            days: {}, 
+            until: `${validated.date || existingRecord.date || new Date().toISOString().split('T')[0]}T22:00:00.000Z` 
+          },
+          isLocked: existingRecord.isLocked || false,
+          activityId: existingRecord.activityId || parseInt(DEPT_DEFAULT_ACTIVITY_ID || '0'),
+          activityName: existingRecord.activityName || "Implementation",
+          budgetId: existingRecord.budgetId || parseInt(DEPT_DEFAULT_BUDGET_ID || '0'),
+          budgetName: existingRecord.budgetName || "Default Budget",
+          companyId: existingRecord.companyId || parseInt(DEPT_DEFAULT_COMPANY_ID || '0'),
+          companyName: existingRecord.companyName || "Default Company",
+          employeeDisplayName: existingRecord.employeeDisplayName || "Employee",
+          projectId: existingRecord.projectId || parseInt(DEPT_DEFAULT_PROJECT_ID || '0'),
+          projectName: existingRecord.projectName || "Default Project",
+          roleId: existingRecord.roleId || 33,
+          serviceDeskTicketNumber: existingRecord.serviceDeskTicketNumber || null,
+          serviceDeskTicketPriority: existingRecord.serviceDeskTicketPriority || "",
+          canEdit: existingRecord.canEdit !== undefined ? existingRecord.canEdit : true,
+          projectTaskId: existingRecord.projectTaskId || null,
+          budgetGroupName: existingRecord.budgetGroupName || "Default Budget Group",
+          timeBookingTypeId: existingRecord.timeBookingTypeId || 1,
+          projectCategory: existingRecord.projectCategory || "Client",
+          dates: existingRecord.dates || null,
         };
 
+        // Step 3: Validate merged result (basic validation)
+        if (!updateData.date) {
+          throw new Error('Date is required and could not be determined from existing record');
+        }
+        if (!updateData.description) {
+          throw new Error('Description is required and could not be determined from existing record');
+        }
+        if (!updateData.hours) {
+          throw new Error('Hours is required and could not be determined from existing record');
+        }
+
+        // Step 4: Save updated record
         const result = await deptApiCall(`/bookedhours/${validated.id}`, {
           method: 'PUT',
           body: JSON.stringify(updateData),
         });
 
+        // Prepare change summary for user feedback
+        const changes = [];
+        if (validated.hours !== undefined) {
+          changes.push(`- Hours: ${existingRecord.hours} → ${validated.hours}`);
+        }
+        if (validated.date) {
+          changes.push(`- Date: ${existingRecord.date} → ${validated.date}`);
+        }
+        if (validated.description) {
+          changes.push(`- Description: "${existingRecord.description}" → "${validated.description}"`);
+        }
+
         return {
           content: [
             {
               type: "text",
-              text: `✅ Successfully updated booking ${validated.id}\n\nChanges:\n${validated.hours ? `- Hours: ${validated.hours}\n` : ''}${validated.date ? `- Date: ${validated.date}\n` : ''}${validated.description ? `- Description: ${validated.description}\n` : ''}\nResult: ${JSON.stringify(result, null, 2)}`,
+              text: `✅ Successfully updated booking ${validated.id}\n\n${changes.length > 0 ? `Changes made:\n${changes.join('\n')}\n\n` : 'No changes were made.\n\n'}Preserved fields:\n- All other fields maintained their original values\n\nUpdated record: ${JSON.stringify(result, null, 2)}`,
             },
           ],
         };
@@ -436,6 +543,103 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             {
               type: "text",
               text: `🔍 Found ${budgets.length} budgets matching "${validated.term}"\n\n${budgets.map((budget: Budget, index: number) => `${index + 1}. ${budget.name || 'Unnamed Budget'} (ID: ${budget.id})`).join('\n')}\n\nFull results:\n${JSON.stringify(result, null, 2)}`,
+            },
+          ],
+        };
+      }
+
+      case "check_booked_hours": {
+        const validated = CheckBookedHoursSchema.parse(args);
+        
+        const employeeId = validated.employeeId || DEPT_EMPLOYEE_ID;
+        
+        const result = await deptApiCall(
+          `/bookedhours/custom/${employeeId}?from=${validated.from}&to=${validated.to}`
+        );
+
+        // Calculate total hours for the period
+        const bookedHours = Array.isArray(result) ? result as BookedHour[] : [];
+        const totalHours = bookedHours.reduce((sum: number, entry: BookedHour) => sum + (parseFloat(String(entry.hours)) || 0), 0);
+        
+        // Format date range for display
+        const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+
+        // Group by date for better readability
+        const byDate: Record<string, BookedHour[]> = {};
+        bookedHours.forEach((entry: BookedHour) => {
+          const date = entry.date?.split('T')[0] || 'Unknown';
+          if (!byDate[date]) byDate[date] = [];
+          byDate[date].push(entry);
+        });
+
+        let summary = `📊 Booked Hours Summary (${formatDate(validated.from)} to ${formatDate(validated.to)})\n\n`;
+        summary += `**Total Hours**: ${totalHours} hours\n`;
+        summary += `**Number of Entries**: ${bookedHours.length}\n\n`;
+
+        if (bookedHours.length > 0) {
+          summary += `**Daily Breakdown**:\n`;
+          Object.keys(byDate).sort().forEach(date => {
+            const dayHours = byDate[date].reduce((sum: number, entry: BookedHour) => sum + (parseFloat(String(entry.hours)) || 0), 0);
+            summary += `• ${formatDate(date)}: ${dayHours} hours (${byDate[date].length} entries)\n`;
+          });
+        } else {
+          summary += `❌ No hours booked in this period.\n`;
+        }
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: summary + `\n**Full Details**:\n${JSON.stringify(result, null, 2)}`,
+            },
+          ],
+        };
+      }
+
+      case "get_booked_hour": {
+        const validated = z.object({
+          id: z.string(),
+        }).parse(args);
+        
+        const result = await deptApiCall(`/bookedhours/${validated.id}`, {
+          method: 'GET',
+        });
+
+        if (!result) {
+          throw new Error(`Time booking with ID ${validated.id} not found`);
+        }
+
+        // Format the result for display
+        const formatDate = (dateStr: string) => {
+          if (!dateStr) return 'Unknown';
+          return new Date(dateStr).toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          });
+        };
+
+        const summary = `📝 Time Entry Details (ID: ${validated.id})\n\n` +
+          `**Date**: ${formatDate(result.date)}\n` +
+          `**Hours**: ${result.hours || 'Unknown'}\n` +
+          `**Description**: ${result.description || 'No description'}\n` +
+          `**Employee**: ${result.employeeDisplayName || 'Unknown'}\n` +
+          `**Project**: ${result.projectName || 'Unknown'}\n` +
+          `**Budget**: ${result.budgetName || 'Unknown'}\n` +
+          `**Activity**: ${result.activityName || 'Unknown'}\n` +
+          `**Status**: ${result.isLocked ? 'Locked' : 'Editable'}\n`;
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: summary + `\n**Full Record**:\n${JSON.stringify(result, null, 2)}`,
             },
           ],
         };

@@ -1,8 +1,10 @@
-version: "3.8"
-
 services:
   dept-hour-booking:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: depthourbooking-dept-hour-booking:latest
+    container_name: dept-hour-booking
     environment:
       - DOCKER_CONTAINER=true
       - DEPT_CLIENT_ID=${DEPT_CLIENT_ID}
@@ -19,4 +21,4 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-    command: ["node", "lib/src/index.js"]
+    restart: unless-stopped
