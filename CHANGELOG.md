@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **ZERO SETUP REQUIRED**: Docker configuration now automatically builds images on first use
 - Removed hardcoded paths from MCP configurations for universal compatibility
 - Fixed "Unable to find image" error when installing via VS Code MCP/Copilot
+- **CLEAN MCP EXPERIENCE**: Suppressed Docker build warnings that appeared as MCP parsing errors
 
 ### Changed
 

@@ -87,6 +87,7 @@ The server includes two ready-to-use MCP configurations:
 
 - **🔥 AUTOMATIC SETUP**: Builds Docker image automatically on first use
 - **✅ ZERO CONFIGURATION**: Just clone and use - no manual steps required
+- **🤫 CLEAN OUTPUT**: Suppresses Docker build warnings for clean MCP experience
 - Uses `docker-compose` for automatic dependency management
 - More isolated and consistent environment
 - Perfect for Copilot installations and sharing
