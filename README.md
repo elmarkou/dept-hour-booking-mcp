@@ -82,12 +82,11 @@ See [CHANGELOG.md](./CHANGELOG.md) for detailed release notes and migration info
 **⚡ FASTEST: Docker Hub Option**
 
 1. **Clone the repository:**
+
    ```bash
    git clone <your-repo>
    cd dept-hour-booking
    ```
-
-`````
 
 2. **Use the Docker Hub configuration:**
    - Copy `.vscode/mcp-dockerhub.json` to `.vscode/mcp.json`
@@ -285,7 +284,7 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
     }
   }
 }
-`````
+````
 
 #### Option 3: Node.js Direct (Requires manual build)
 
