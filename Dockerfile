@@ -1,5 +1,9 @@
-# Use Node.js 20 Alpine for smaller image size (MCP SDK requires Node 20+)
-FROM node:20-alpine
+# Multi-stage build for smaller final image
+# Stage 1: Build stage
+FROM node:20-alpine AS builder
+
+# Install build dependencies
+RUN apk add --no-cache python3 make g++
 
 # Set working directory
 WORKDIR /app
@@ -7,8 +11,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install all dependencies (including dev dependencies for build)
-RUN npm ci
+# Install ALL dependencies for building
+RUN npm ci --include=dev
 
 # Copy source code
 COPY . .
@@ -16,16 +20,35 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Remove dev dependencies after build
-RUN npm prune --production
+# Stage 2: Production stage
+FROM node:20-alpine AS production
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install ONLY production dependencies
+RUN npm ci --omit=dev && npm cache clean --force
+
+# Copy built application from builder stage
+COPY --from=builder /app/lib ./lib
 
 # Create non-root user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S mcp -u 1001
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S mcp -u 1001 -G nodejs
 
 # Change ownership to non-root user
 RUN chown -R mcp:nodejs /app
+
+# Switch to non-root user
 USER mcp
+
+# Set environment variables to suppress dotenv output
+ENV DOCKER_CONTAINER=true
+ENV DOTENV_CONFIG_DEBUG=false
+ENV NODE_ENV=production
 
 # Expose port (though we'll primarily use stdio)
 EXPOSE 3000

@@ -10,9 +10,17 @@ yarn-error.log*
 .git/
 .gitignore
 README.md
+README_NEW.md
+CHANGELOG.md
 .vscode/
+.history
 .DS_Store
 *.log
 lib/
 dist/
 coverage/
+docker-compose.yml
+.dockerignore
+eslint.config.js
+setup.sh
+public_API.json

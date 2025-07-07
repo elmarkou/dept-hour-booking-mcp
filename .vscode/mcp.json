@@ -74,6 +74,8 @@
         "DEPT_DEFAULT_COMPANY_ID",
         "-e",
         "DEPT_DEFAULT_BUDGET_ID",
+        "-e",
+        "DOTENV_CONFIG_DEBUG=false",
         "depthourbooking-dept-hour-booking"
       ],
       "env": {
