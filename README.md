@@ -2,7 +2,56 @@
 
 > **✅ Version 1.0.2 - Latest Release**
 >
-> **Current Status**: Fully functional with Google OAuth2 authentication. Production-ready for use with Google Cloud project.
+> **Current Status**: Fully functional with Google OAuth2 authen### Claude Desktop Configuration
+
+Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
+
+#### Option 1: Docker Hub (Easiest - No Build Required) ⭐⭐⭐
+
+```json
+{
+  "mcpServers": {
+    "dept-hour-booking": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "DEPT_CLIENT_ID=17",
+        "-e",
+        "DEPT_CLIENT_SECRET=<YOUR_CLIENT_SECRET>",
+        "-e",
+        "DEPT_GOOGLE_ID_TOKEN=<YOUR_GOOGLE_ID_TOKEN>",
+        "-e",
+        "DEPT_EMPLOYEE_ID=<YOUR_EMPLOYEE_ID>",
+        "-e",
+        "DEPT_CORPORATION_ID=<YOUR_CORPORATION_ID>",
+        "-e",
+        "DEPT_DEFAULT_ACTIVITY_ID=<YOUR_DEFAULT_ACTIVITY_ID>",
+        "-e",
+        "DEPT_DEFAULT_PROJECT_ID=<YOUR_DEFAULT_PROJECT_ID>",
+        "-e",
+        "DEPT_DEFAULT_COMPANY_ID=<YOUR_DEFAULT_COMPANY_ID>",
+        "-e",
+        "DEPT_DEFAULT_BUDGET_ID=<YOUR_DEFAULT_BUDGET_ID>",
+        "-e",
+        "DOCKER_CONTAINER=true",
+        "elmarkou/dept-hourbooking:latest"
+      ]
+    }
+  }
+}
+```
+
+#### Option 2: Local Docker Build (Requires repository clone)
+
+````json
+{
+  "mcpServers": {
+    "dept-hour-booking": {
+      "command": "docker-compose",
+      "args": ["run", "--rm", "-T", "dept-hour-booking"],oduction-ready for use with Google Cloud project.
 >
 > **Latest Update**: Zero-setup configuration with portable Docker auto-build.
 
@@ -29,6 +78,8 @@ This update makes the repository fully portable and zero-setup:
 - 📁 **Universal Compatibility**: Works out-of-the-box in any environment
 - 🔄 **Selective Git Tracking**: Only includes essential VS Code configs, excludes personal settings
 - 📝 **Simplified Installation**: Just clone and use - no manual setup required
+- 📂 **Organized Scripts**: All shell scripts moved to `scripts/` directory for cleaner structure
+- 🚀 **NPM Scripts**: Added convenient npm scripts for all dev/ops tasks (`npm run setup`, `npm run docker:build`, etc.)
 
 ### Previous Version (1.0.1) Highlights
 
@@ -40,9 +91,24 @@ See [CHANGELOG.md](./CHANGELOG.md) for detailed release notes and migration info
 
 ## Quick Start
 
-> **✅ ZERO SETUP REQUIRED**: The Docker configuration automatically builds everything when first used!
+> **✅ ZERO SETUP REQUIRED**: Multiple options available - choose what works best for you!
 
 ### VS Code MCP (Recommended)
+
+**⚡ FASTEST: Docker Hub Option**
+1. **Clone the repository:**
+   ```bash
+   git clone <your-repo>
+   cd dept-hour-booking
+````
+
+2. **Use the Docker Hub configuration:**
+   - Copy `.vscode/mcp-dockerhub.json` to `.vscode/mcp.json`
+   - **INSTANT SETUP**: Uses pre-built image from Docker Hub
+   - **NO BUILD TIME**: Downloads ready-to-use image automatically
+   - VS Code will prompt for your credentials when you first connect
+
+**🔨 ALTERNATIVE: Local Build Option**
 
 1. **Clone the repository:**
 
@@ -51,48 +117,77 @@ See [CHANGELOG.md](./CHANGELOG.md) for detailed release notes and migration info
    cd dept-hour-booking
    ```
 
-2. **Use the MCP configuration:**
-
+2. **Use the local build configuration:**
    - The `.vscode/mcp.json` configuration is ready to use
    - **No manual setup needed** - Docker will automatically build the image on first use
    - VS Code will prompt for your credentials when you first connect
 
-3. **Alternative: Node.js Direct**
-   - If you prefer Node.js over Docker, run:
-     ```bash
-     npm install && npm run build
-     ```
-   - Then use `.vscode/mcp-nodejs.json` (copy to `.vscode/mcp.json`)
+**🛠️ DEVELOPMENT: Node.js Direct**
+
+- If you prefer Node.js over Docker, run:
+  ```bash
+  npm install && npm run build
+  ```
+- Then use `.vscode/mcp-nodejs.json` (copy to `.vscode/mcp.json`)
 
 ### Manual Setup (Optional)
 
-Only needed if you want to pre-build or test:
+Only needed if you want to pre-build or test. We provide convenient npm scripts for all tasks:
 
 ```bash
-# Optional: Pre-build Docker image
-docker-compose build
+# Setup and preparation
+npm run setup          # Run initial setup script
+npm run setup:mcp       # Setup MCP-specific configuration
 
-# Optional: Build Node.js project
-npm install && npm run build
+# Docker operations
+npm run docker:build    # Build Docker image
+npm run docker:run      # Run MCP server with Docker
+npm run docker:cleanup  # Clean up Docker resources
+npm run docker:pull     # Pull Docker image from registry
+npm run deploy:docker   # Build and push to Docker Hub
 
-# Optional: Test configurations
-./test-mcp.sh
+# Development and testing
+npm run build          # Build TypeScript project
+npm run test:mcp       # Test MCP configurations
+npm run dev:stdio      # Run in development mode
+npm run dev:inspector  # Start MCP Inspector
+```
+
+**Quick commands:**
+
+```bash
+# Most common: Setup and test
+npm run setup && npm run test:mcp
+
+# Docker workflow
+npm run docker:build && npm run docker:run
+
+# Development workflow
+npm run build && npm run dev:stdio
 ```
 
 ### VS Code MCP Configuration
 
-The server includes two ready-to-use MCP configurations:
+The server includes three ready-to-use MCP configurations:
 
-#### Option 1: Docker-based (`.vscode/mcp.json`) - Recommended ⭐
+#### Option 1: Docker Hub (`.vscode/mcp-dockerhub.json`) - Easiest ⭐⭐⭐
+
+- **🚀 INSTANT SETUP**: Uses pre-built Docker image from Docker Hub
+- **📦 NO BUILD REQUIRED**: Downloads ready-to-use image automatically
+- **🌐 UNIVERSAL**: Works anywhere with Docker, no local build needed
+- **⚡ FASTEST**: Skip build time completely
+- Perfect for quick starts and Copilot installations
+
+#### Option 2: Local Docker Build (`.vscode/mcp.json`) - Recommended ⭐⭐
 
 - **🔥 AUTOMATIC SETUP**: Builds Docker image automatically on first use
 - **✅ ZERO CONFIGURATION**: Just clone and use - no manual steps required
 - **🤫 CLEAN OUTPUT**: Suppresses Docker build warnings for clean MCP experience
 - Uses `docker-compose` for automatic dependency management
 - More isolated and consistent environment
-- Perfect for Copilot installations and sharing
+- Perfect for development and customization
 
-#### Option 2: Node.js-based (`.vscode/mcp-nodejs.json`) - For Development
+#### Option 3: Node.js-based (`.vscode/mcp-nodejs.json`) - For Development ⭐
 
 - Uses Node.js directly, faster startup after initial build
 - More reliable for local VS Code integration
@@ -119,7 +214,68 @@ The server includes two ready-to-use MCP configurations:
 
 Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
 
-#### Option 1: Docker-compose (Recommended - Auto-builds)
+#### Option 1: Docker Hub (Easiest - No Build Required) ⭐⭐⭐
+
+```json
+{
+  "mcpServers": {
+    "dept-hour-booking": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "DEPT_CLIENT_ID=17",
+        "-e",
+        "DEPT_CLIENT_SECRET=<YOUR_CLIENT_SECRET>",
+        "-e",
+        "DEPT_GOOGLE_ID_TOKEN=<YOUR_GOOGLE_ID_TOKEN>",
+        "-e",
+        "DEPT_EMPLOYEE_ID=<YOUR_EMPLOYEE_ID>",
+        "-e",
+        "DEPT_CORPORATION_ID=<YOUR_CORPORATION_ID>",
+        "-e",
+        "DEPT_DEFAULT_ACTIVITY_ID=<YOUR_DEFAULT_ACTIVITY_ID>",
+        "-e",
+        "DEPT_DEFAULT_PROJECT_ID=<YOUR_DEFAULT_PROJECT_ID>",
+        "-e",
+        "DEPT_DEFAULT_COMPANY_ID=<YOUR_DEFAULT_COMPANY_ID>",
+        "-e",
+        "DEPT_DEFAULT_BUDGET_ID=<YOUR_DEFAULT_BUDGET_ID>",
+        "-e",
+        "DOCKER_CONTAINER=true",
+        "elmarkou/dept-hourbooking:latest"
+      ]
+    }
+  }
+}
+```
+
+#### Option 2: Local Docker Build (Requires repository clone)
+
+````json
+{
+  "mcpServers": {
+    "dept-hour-booking": {
+      "command": "docker-compose",
+      "args": ["run", "--rm", "-T", "dept-hour-booking"],
+      "cwd": "/absolute/path/to/your/dept-hour-booking",
+      "env": {
+        "DEPT_CLIENT_ID": "17",
+        "DEPT_CLIENT_SECRET": "<YOUR_CLIENT_SECRET>",
+        "DEPT_GOOGLE_ID_TOKEN": "<YOUR_GOOGLE_ID_TOKEN>",
+        "DEPT_EMPLOYEE_ID": "<YOUR_EMPLOYEE_ID>",
+        "DEPT_CORPORATION_ID": "<YOUR_CORPORATION_ID>",
+        "DEPT_DEFAULT_ACTIVITY_ID": "<YOUR_DEFAULT_ACTIVITY_ID>",
+        "DEPT_DEFAULT_PROJECT_ID": "<YOUR_DEFAULT_PROJECT_ID>",
+        "DEPT_DEFAULT_COMPANY_ID": "<YOUR_DEFAULT_COMPANY_ID>",
+        "DEPT_DEFAULT_BUDGET_ID": "<YOUR_DEFAULT_BUDGET_ID>"
+      }
+    }
+  }
+}
+#### Option 2: Local Docker Build (Requires repository clone)
 
 ```json
 {
@@ -142,9 +298,9 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
     }
   }
 }
-```
+````
 
-#### Option 2: Node.js Direct (Requires manual build)
+#### Option 3: Node.js Direct (Requires manual build)
 
 ```json
 {
@@ -171,12 +327,12 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
 
 **Notes**:
 
-- Replace `/absolute/path/to/your/dept-hour-booking` with the actual absolute path where you cloned the repository
-- **Examples**:
+- **Option 1 (Docker Hub)**: ⭐ **RECOMMENDED** - No setup required, works anywhere with Docker, **no `cwd` needed**
+- **Option 2 (Local Build)**: Requires cloning repository and replacing `/absolute/path/to/your/dept-hour-booking` with actual path
+- **Option 3 (Node.js)**: Requires running `npm install && npm run build` first and setting correct `cwd` path
+- **Examples of absolute paths**:
   - macOS/Linux: `/Users/yourname/projects/dept-hour-booking` or `/home/yourname/dept-hour-booking`
   - Windows: `C:\\Users\\yourname\\projects\\dept-hour-booking`
-- **Option 1** automatically builds the Docker image if it doesn't exist (recommended)
-- **Option 2** requires running `npm install && npm run build` first
 
 ## Prerequisites
 
@@ -385,16 +541,24 @@ docker run -i --rm \
 ```
 ├── src/
 │   └── index.ts              # Main MCP server implementation
+├── scripts/
+│   ├── setup.sh              # General setup script
+│   ├── setup-mcp.sh          # Automated MCP setup script
+│   ├── test-mcp.sh           # Test script for MCP configurations
+│   ├── run-mcp.sh            # Run MCP server with Docker
+│   ├── run-mcp-docker.sh     # Run MCP server directly with Docker
+│   ├── build-and-push.sh     # Build and push Docker image
+│   ├── pull-image.sh         # Pull Docker image from registry
+│   └── docker-cleanup.sh     # Clean up Docker resources
 ├── .vscode/
 │   ├── mcp.json              # Docker-based MCP configuration
+│   ├── mcp-dockerhub.json    # Docker Hub-based MCP configuration
 │   ├── mcp-nodejs.json       # Node.js-based MCP configuration
 │   └── tasks.json            # VS Code tasks including setup
 ├── .env.example              # Environment configuration template
 ├── .gitignore               # Git ignore rules
 ├── Dockerfile                # Docker configuration
 ├── docker-compose.yml        # Docker Compose for development
-├── setup-mcp.sh             # Automated setup script
-├── test-mcp.sh              # Test script for MCP configurations
 ├── package.json             # Node.js dependencies and scripts
 ├── tsconfig.json            # TypeScript configuration
 └── README.md                # This file
@@ -500,3 +664,65 @@ This project is licensed under the ISC License - see the [package.json](package.
 ---
 
 Built with ❤️ following the GitHub MCP Server pattern for seamless AI integration.
+
+## Docker Hub Deployment (For Maintainers)
+
+### Publishing to Docker Hub
+
+The project includes npm scripts for easy Docker Hub deployment:
+
+1. **Login to Docker Hub:**
+
+   ```bash
+   docker login
+   ```
+
+2. **Build and Push:**
+
+   ```bash
+   npm run deploy:docker
+   ```
+
+   This script will:
+
+   - Build the Docker image with version tags
+   - Push both versioned and `latest` tags to Docker Hub
+   - Use the version from `package.json` automatically
+
+3. **Pull Latest Image:**
+   ```bash
+   npm run docker:pull
+   ```
+
+**Alternative:** You can also use the individual scripts directly:
+
+```bash
+# Direct script access
+./scripts/build-and-push.sh
+./scripts/pull-image.sh
+```
+
+### Docker Hub Configuration
+
+The Docker Hub image is published as:
+
+- **Repository**: `elmarkou/dept-hourbooking`
+- **Tags**: `latest`, `1.0.2`, etc.
+- **URL**: https://hub.docker.com/r/elmarkou/dept-hourbooking
+
+### Using Docker Hub Image
+
+Users can now use the MCP server without any local setup:
+
+```bash
+# Pull and run directly
+docker run -it --rm \
+  -e DEPT_CLIENT_ID="17" \
+  -e DEPT_CLIENT_SECRET="your_secret" \
+  -e DEPT_GOOGLE_ID_TOKEN="your_token" \
+  -e DEPT_EMPLOYEE_ID="your_id" \
+  -e DEPT_CORPORATION_ID="your_corp_id" \
+  elmarkou/dept-hourbooking:latest
+```
+
+Or use in Claude Desktop/VS Code MCP with zero setup required!

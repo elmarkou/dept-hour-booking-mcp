@@ -22,5 +22,5 @@ coverage/
 docker-compose.yml
 .dockerignore
 eslint.config.js
-setup.sh
+scripts/
 public_API.json

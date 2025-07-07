@@ -4,7 +4,7 @@
     {
       "label": "Setup MCP Server",
       "type": "shell",
-      "command": "./setup-mcp.sh",
+      "command": "./scripts/setup-mcp.sh",
       "group": "build",
       "presentation": {
         "echo": true,

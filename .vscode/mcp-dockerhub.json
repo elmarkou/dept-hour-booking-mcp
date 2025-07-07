@@ -51,20 +51,33 @@
   ],
   "servers": {
     "dept-hour-booking": {
-      "command": "./scripts/run-mcp.sh",
-      "args": [],
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "DEPT_CLIENT_ID": "${input:deptClientId}",
-        "DEPT_CLIENT_SECRET": "${input:deptClientSecret}",
-        "DEPT_GOOGLE_ID_TOKEN": "${input:deptGoogleIdToken}",
-        "DEPT_EMPLOYEE_ID": "${input:deptEmployeeId}",
-        "DEPT_CORPORATION_ID": "${input:deptCorporationId}",
-        "DEPT_DEFAULT_ACTIVITY_ID": "${input:deptDefaultActivityId}",
-        "DEPT_DEFAULT_PROJECT_ID": "${input:deptDefaultProjectId}",
-        "DEPT_DEFAULT_COMPANY_ID": "${input:deptDefaultCompanyId}",
-        "DEPT_DEFAULT_BUDGET_ID": "${input:deptDefaultBudgetId}"
-      }
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "DEPT_CLIENT_ID=${input:deptClientId}",
+        "-e",
+        "DEPT_CLIENT_SECRET=${input:deptClientSecret}",
+        "-e",
+        "DEPT_GOOGLE_ID_TOKEN=${input:deptGoogleIdToken}",
+        "-e",
+        "DEPT_EMPLOYEE_ID=${input:deptEmployeeId}",
+        "-e",
+        "DEPT_CORPORATION_ID=${input:deptCorporationId}",
+        "-e",
+        "DEPT_DEFAULT_ACTIVITY_ID=${input:deptDefaultActivityId}",
+        "-e",
+        "DEPT_DEFAULT_PROJECT_ID=${input:deptDefaultProjectId}",
+        "-e",
+        "DEPT_DEFAULT_COMPANY_ID=${input:deptDefaultCompanyId}",
+        "-e",
+        "DEPT_DEFAULT_BUDGET_ID=${input:deptDefaultBudgetId}",
+        "-e",
+        "DOCKER_CONTAINER=true",
+        "elmarkou/dept-hourbooking:latest"
+      ]
     }
   }
 }

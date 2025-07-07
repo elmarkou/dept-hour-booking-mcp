@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: depthourbooking-dept-hour-booking:latest
+    image: elmarkou/dept-hourbooking:latest
     environment:
       - DOCKER_CONTAINER=true
       - DEPT_CLIENT_ID=${DEPT_CLIENT_ID}

@@ -21,6 +21,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated documentation to reflect automatic setup
 - Selective .gitignore for VS Code files (keeps important MCP configs, excludes personal settings)
 
+### Added
+
+- **Organized Scripts**: All shell scripts moved to `scripts/` directory
+- **NPM Scripts**: Added convenient npm scripts for all dev/ops tasks:
+  - `npm run setup` - Initial setup
+  - `npm run docker:build` - Build Docker image
+  - `npm run docker:run` - Run with Docker
+  - `npm run deploy:docker` - Build and push to Docker Hub
+  - `npm run test:mcp` - Test MCP configurations
+  - And many more for complete workflow automation
+
 ## [1.0.1] - 2025-07-07
 
 ### Fixed

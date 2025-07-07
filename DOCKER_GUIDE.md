@@ -33,8 +33,8 @@ Repeatedly building and running during development.
 
 **Solution:** Use the provided scripts:
 
-- `./setup.sh` - Clean setup and start
-- `./docker-cleanup.sh` - Clean up multiple containers
+- `./scripts/setup.sh` - Clean setup and start
+- `./scripts/docker-cleanup.sh` - Clean up multiple containers
 
 ## Recommended Commands
 
@@ -42,7 +42,7 @@ Repeatedly building and running during development.
 
 ```bash
 # Start the container
-./setup.sh
+./scripts/setup.sh
 
 # View logs
 docker-compose logs -f
@@ -66,7 +66,7 @@ docker-compose ps
 
 ```bash
 # Clean up all containers and images
-./docker-cleanup.sh
+./scripts/docker-cleanup.sh
 
 # Manual cleanup
 docker container prune -f
@@ -97,7 +97,7 @@ docker system df
 
 1. **Always use docker-compose** instead of docker run
 2. **Run cleanup scripts** before starting new containers
-3. **Use the provided setup.sh** script for consistent startup
+3. **Use the provided scripts/setup.sh** script for consistent startup
 4. **Stop containers** when not needed: `docker-compose down`
 5. **Monitor regularly** with `docker ps -a`
 
@@ -105,7 +105,7 @@ docker system df
 
 If you still see multiple containers:
 
-1. Run `./docker-cleanup.sh` to clean up
+1. Run `./scripts/docker-cleanup.sh` to clean up
 2. Check for any automation scripts or cron jobs
 3. Verify you're not running multiple terminal sessions with docker commands
 4. Check if any IDE or development tools are managing Docker containers automatically
