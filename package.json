@@ -20,7 +20,7 @@
     "docker:run-direct": "chmod +x scripts/*.sh && ./scripts/run-mcp-docker.sh",
     "docker:cleanup": "chmod +x scripts/*.sh && ./scripts/docker-cleanup.sh",
     "docker:pull": "chmod +x scripts/*.sh && ./scripts/pull-image.sh",
-    "deploy:docker": "chmod +x scripts/*.sh && ./scripts/build-and-push.sh",
+    "docker:deploy": "chmod +x scripts/*.sh && ./scripts/build-and-push.sh",
     "test:mcp": "chmod +x scripts/*.sh && ./scripts/test-mcp.sh"
   },
   "author": "",
