@@ -51,33 +51,14 @@
   ],
   "servers": {
     "dept-hour-booking": {
-      "command": "docker",
+      "command": "docker-compose",
       "args": [
         "run",
-        "-i",
         "--rm",
-        "-e",
-        "DEPT_CLIENT_ID",
-        "-e",
-        "DEPT_CLIENT_SECRET",
-        "-e",
-        "DEPT_GOOGLE_ID_TOKEN",
-        "-e",
-        "DEPT_EMPLOYEE_ID",
-        "-e",
-        "DEPT_CORPORATION_ID",
-        "-e",
-        "DEPT_DEFAULT_ACTIVITY_ID",
-        "-e",
-        "DEPT_DEFAULT_PROJECT_ID",
-        "-e",
-        "DEPT_DEFAULT_COMPANY_ID",
-        "-e",
-        "DEPT_DEFAULT_BUDGET_ID",
-        "-e",
-        "DOTENV_CONFIG_DEBUG=false",
-        "depthourbooking-dept-hour-booking"
+        "-T",
+        "dept-hour-booking"
       ],
+      "cwd": "${workspaceFolder}",
       "env": {
         "DEPT_CLIENT_ID": "${input:deptClientId}",
         "DEPT_CLIENT_SECRET": "${input:deptClientSecret}",

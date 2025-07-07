@@ -9,3 +9,13 @@ node_modules/
 
 # build
 lib/
+
+# IDEs and editors
+.vscode/settings.json
+.vscode/launch.json
+.vscode/mcp-local.json
+.idea/
+*.swp
+*.swo
+*~
+.aitk/

@@ -34,95 +34,92 @@ See [CHANGELOG.md](./CHANGELOG.md) for detailed release notes and migration info
 
 ## Quick Start
 
-### Option 1: Docker (Recommended)
+> **✅ ZERO SETUP REQUIRED**: The Docker configuration automatically builds everything when first used!
 
-1. **Clone and setup:**
+### VS Code MCP (Recommended)
 
+1. **Clone the repository:**
    ```bash
    git clone <your-repo>
    cd dept-hour-booking
    ```
 
-2. **Configure environment:**
+2. **Use the MCP configuration:**
+   - The `.vscode/mcp.json` configuration is ready to use
+   - **No manual setup needed** - Docker will automatically build the image on first use
+   - VS Code will prompt for your credentials when you first connect
 
-   ```bash
-   cp .env.example .env
-   # Edit .env with your credentials (see Configuration section)
-   ```
+3. **Alternative: Node.js Direct**
+   - If you prefer Node.js over Docker, run:
+     ```bash
+     npm install && npm run build
+     ```
+   - Then use `.vscode/mcp-nodejs.json` (copy to `.vscode/mcp.json`)
 
-3. **Start with Docker Compose:**
+### Manual Setup (Optional)
 
-   ```bash
-   docker-compose up
-   ```
+Only needed if you want to pre-build or test:
 
-4. **Configure VS Code:**
-   The server is now running and ready to use with the MCP configuration in `.vscode/mcp.json`
+```bash
+# Optional: Pre-build Docker image
+docker-compose build
 
-### Option 2: Local Development
+# Optional: Build Node.js project
+npm install && npm run build
 
-1. **Install dependencies:**
-
-   ```bash
-   npm install
-   npm run build
-   ```
-
-2. **Configure and run:**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your credentials
-   node lib/src/index.js
-   ```
+# Optional: Test configurations
+./test-mcp.sh
+```
 
 ### VS Code MCP Configuration
 
-The server includes a ready-to-use MCP configuration in `.vscode/mcp.json`. This configuration will prompt you for the required credentials when you use the MCP server.
+The server includes two ready-to-use MCP configurations:
 
-**Required inputs when prompted:**
+#### Option 1: Docker-based (`.vscode/mcp.json`) - Recommended ⭐
+- **🔥 AUTOMATIC SETUP**: Builds Docker image automatically on first use
+- **✅ ZERO CONFIGURATION**: Just clone and use - no manual steps required
+- Uses `docker-compose` for automatic dependency management
+- More isolated and consistent environment
+- Perfect for Copilot installations and sharing
+
+#### Option 2: Node.js-based (`.vscode/mcp-nodejs.json`) - For Development
+- Uses Node.js directly, faster startup after initial build
+- More reliable for local VS Code integration
+- Easier debugging and development
+- Requires manual `npm install && npm run build` first
+
+**Both configurations will prompt you for credentials:**
 
 - **Dept Client ID**: Your Dept client ID (typically "17")
-- **Dept Client Secret**: Your client secret (contact Dept admin if needed)
+- **Dept Client Secret**: Your client secret (contact Dept admin if needed)  
 - **Google ID Token**: Obtain from Google OAuth (see Getting Credentials section)
 - **Employee ID**: Your Dept employee ID
 - **Corporation ID**: Your Dept corporation ID
 - **Default Activity ID, Project ID, Company ID, Budget ID**: Your default IDs
 
-The configuration automatically handles Docker container management and environment variable passing.
+**For first-time users:**
+1. Clone the repository
+2. Open in VS Code with MCP enabled
+3. The Docker configuration will automatically build everything on first use
+4. Enter your credentials when prompted
 
 ### Claude Desktop Configuration
 
 Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
 
+#### Option 1: Docker-compose (Recommended - Auto-builds)
 ```json
 {
   "mcpServers": {
     "dept-hour-booking": {
-      "command": "docker",
+      "command": "docker-compose",
       "args": [
         "run",
-        "-i",
         "--rm",
-        "-e",
-        "DEPT_CLIENT_ID",
-        "-e",
-        "DEPT_CLIENT_SECRET",
-        "-e",
-        "DEPT_GOOGLE_ID_TOKEN",
-        "-e",
-        "DEPT_EMPLOYEE_ID",
-        "-e",
-        "DEPT_CORPORATION_ID",
-        "-e",
-        "DEPT_DEFAULT_ACTIVITY_ID",
-        "-e",
-        "DEPT_DEFAULT_PROJECT_ID",
-        "-e",
-        "DEPT_DEFAULT_COMPANY_ID",
-        "-e",
-        "DEPT_DEFAULT_BUDGET_ID",
-        "depthourbooking-dept-hour-booking"
+        "-T",
+        "dept-hour-booking"
       ],
+      "cwd": "/absolute/path/to/your/dept-hour-booking",
       "env": {
         "DEPT_CLIENT_ID": "17",
         "DEPT_CLIENT_SECRET": "<YOUR_CLIENT_SECRET>",
@@ -138,6 +135,38 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
   }
 }
 ```
+
+#### Option 2: Node.js Direct (Requires manual build)
+```json
+{
+  "mcpServers": {
+    "dept-hour-booking": {
+      "command": "node",
+      "args": ["./lib/src/index.js"],
+      "cwd": "/absolute/path/to/your/dept-hour-booking",
+      "env": {
+        "DEPT_CLIENT_ID": "17",
+        "DEPT_CLIENT_SECRET": "<YOUR_CLIENT_SECRET>",
+        "DEPT_GOOGLE_ID_TOKEN": "<YOUR_GOOGLE_ID_TOKEN>",
+        "DEPT_EMPLOYEE_ID": "<YOUR_EMPLOYEE_ID>",
+        "DEPT_CORPORATION_ID": "<YOUR_CORPORATION_ID>",
+        "DEPT_DEFAULT_ACTIVITY_ID": "<YOUR_DEFAULT_ACTIVITY_ID>",
+        "DEPT_DEFAULT_PROJECT_ID": "<YOUR_DEFAULT_PROJECT_ID>",
+        "DEPT_DEFAULT_COMPANY_ID": "<YOUR_DEFAULT_COMPANY_ID>",
+        "DEPT_DEFAULT_BUDGET_ID": "<YOUR_DEFAULT_BUDGET_ID>"
+      }
+    }
+  }
+}
+```
+
+**Notes**: 
+- Replace `/absolute/path/to/your/dept-hour-booking` with the actual absolute path where you cloned the repository
+- **Examples**: 
+  - macOS/Linux: `/Users/yourname/projects/dept-hour-booking` or `/home/yourname/dept-hour-booking`
+  - Windows: `C:\\Users\\yourname\\projects\\dept-hour-booking`
+- **Option 1** automatically builds the Docker image if it doesn't exist (recommended)
+- **Option 2** requires running `npm install && npm run build` first
 
 ## Prerequisites
 
@@ -345,16 +374,20 @@ docker run -i --rm \
 
 ```
 ├── src/
-│   └── index.ts          # Main MCP server implementation
+│   └── index.ts              # Main MCP server implementation
 ├── .vscode/
-│   └── mcp.json          # VS Code MCP configuration
-├── .env.example          # Environment configuration template
-├── .gitignore           # Git ignore rules
-├── Dockerfile            # Docker configuration
-├── docker-compose.yml    # Docker Compose for development
-├── package.json         # Node.js dependencies and scripts
-├── tsconfig.json        # TypeScript configuration
-└── README.md            # This file
+│   ├── mcp.json              # Docker-based MCP configuration
+│   ├── mcp-nodejs.json       # Node.js-based MCP configuration
+│   └── tasks.json            # VS Code tasks including setup
+├── .env.example              # Environment configuration template
+├── .gitignore               # Git ignore rules
+├── Dockerfile                # Docker configuration
+├── docker-compose.yml        # Docker Compose for development
+├── setup-mcp.sh             # Automated setup script
+├── test-mcp.sh              # Test script for MCP configurations
+├── package.json             # Node.js dependencies and scripts
+├── tsconfig.json            # TypeScript configuration
+└── README.md                # This file
 ```
 
 ## How It Works
@@ -414,6 +447,13 @@ _This method will be available once Dept creates the Google Cloud project:_
 
 ### Common Issues
 
+- **"Building Docker image... (first time)"**: This is normal! Docker is automatically building the image for you
+- **Long first startup**: First run builds the Docker image (takes 30-60 seconds), subsequent runs are instant
+- **"docker-compose: command not found"**: Install Docker Desktop or docker-compose
+  - **Solution**: Install Docker Desktop which includes docker-compose
+- **Missing credentials**: Ensure you enter valid credentials when prompted by VS Code MCP
+- **"Process exited with code 125"**: Docker configuration issue
+  - **Solution**: Ensure Docker is running and try again
 - **"Missing required credentials"**: Make sure you've set `DEPT_CLIENT_SECRET` and `DEPT_GOOGLE_ID_TOKEN`
 - **"Initial Google authentication failed"**: Your Google ID token may be expired or invalid, or Google Cloud project is not set up
 - **"Token refresh failed"**: Your session may have expired, restart the server to re-authenticate with Google
