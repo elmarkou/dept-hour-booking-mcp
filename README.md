@@ -1,10 +1,10 @@
 # Dept Hour Booking MCP Server
 
-> **✅ Version 1.0.3 - Latest Release**
+> **✅ Version 1.0.4 - Latest Release**
 >
-> **Current Status**: Fully functional with Google OAuth2 authentication and bulk booking capabilities.
+> **Current Status**: Functional with manual Google API token setup, bulk booking capabilities, and time entry deletion. Full Google OAuth2 integration in progress.
 >
-> **Latest Update**: Added bulk hours booking feature for efficient multi-day time entry.
+> **Latest Update**: Added delete hours functionality for removing time entries from the system.
 
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that integrates with the Dept Public API for time tracking and project management. Built following the same patterns as the [GitHub MCP Server](https://github.com/github/github-mcp-server).
 
@@ -13,7 +13,8 @@ A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that i
 - **📝 Book Hours**: Create individual time entries with automatic budget lookup
 - **📅 Bulk Book Hours**: Efficiently book hours across multiple days with date range and weekday selection
 - **✏️ Update Hours**: Modify existing time bookings with proper data preservation
-- **🔍 Search Budgets**: Find available budgets and projects
+- **�️ Delete Hours**: Remove time entries from the system with confirmation
+- **�🔍 Search Budgets**: Find available budgets and projects
 - **📋 Check Booked Hours**: View time entries for specific date ranges
 - **📊 Get Hour Details**: Retrieve individual time booking records
 - **🔧 Configurable**: Environment-based configuration
@@ -22,7 +23,19 @@ A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that i
 - **🤖 AI-Ready**: Natural language interface through MCP protocol
 - **⚡ One-Click Install**: Easy installation via VS Code Copilot MCP Extension
 
-## Version 1.0.3 Release Notes
+## Version 1.0.4 Release Notes
+
+This update introduces time entry deletion capabilities:
+
+- 🗑️ **NEW: Delete Hours Tool**: Remove time entries from the system with confirmation
+- ⚠️ **Safety Features**: Fetches entry details before deletion for confirmation
+- 📋 **Detailed Feedback**: Shows deleted entry information for verification
+- 🔒 **Secure Operation**: Uses existing authentication and validation patterns
+- 💬 **Natural Language**: Supports deletion via conversational interface
+
+### Previous Versions
+
+#### Version 1.0.3 Release Notes
 
 This update introduces efficient bulk time booking capabilities:
 
@@ -240,29 +253,6 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
 
 #### Option 2: Local Docker Build (Requires repository clone)
 
-````json
-{
-  "mcpServers": {
-    "dept-hour-booking": {
-      "command": "docker-compose",
-      "args": ["run", "--rm", "-T", "dept-hour-booking"],
-      "cwd": "/absolute/path/to/your/dept-hour-booking",
-      "env": {
-        "DEPT_CLIENT_ID": "17",
-        "DEPT_CLIENT_SECRET": "<YOUR_CLIENT_SECRET>",
-        "DEPT_GOOGLE_ID_TOKEN": "<YOUR_GOOGLE_ID_TOKEN>",
-        "DEPT_EMPLOYEE_ID": "<YOUR_EMPLOYEE_ID>",
-        "DEPT_CORPORATION_ID": "<YOUR_CORPORATION_ID>",
-        "DEPT_DEFAULT_ACTIVITY_ID": "<YOUR_DEFAULT_ACTIVITY_ID>",
-        "DEPT_DEFAULT_PROJECT_ID": "<YOUR_DEFAULT_PROJECT_ID>",
-        "DEPT_DEFAULT_COMPANY_ID": "<YOUR_DEFAULT_COMPANY_ID>",
-        "DEPT_DEFAULT_BUDGET_ID": "<YOUR_DEFAULT_BUDGET_ID>"
-      }
-    }
-  }
-}
-#### Option 2: Local Docker Build (Requires repository clone)
-
 ```json
 {
   "mcpServers": {
@@ -284,7 +274,7 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
     }
   }
 }
-````
+```
 
 #### Option 3: Node.js Direct (Requires manual build)
 
@@ -477,6 +467,24 @@ Get details of a specific booked hour entry by ID.
 }
 ```
 
+### `delete_hours`
+
+Delete a time entry from the Dept system.
+
+**Parameters:**
+
+- `id` (string): Time entry ID to delete
+
+**Example:**
+
+```json
+{
+  "id": "12345"
+}
+```
+
+> **⚠️ Warning**: This action is irreversible. The time entry will be permanently deleted from the system.
+
 ## Natural Language Usage
 
 Once configured, you can interact with the server using natural language:
@@ -485,6 +493,8 @@ Once configured, you can interact with the server using natural language:
 - _"Book 8 hours per day for this week working on project development"_
 - _"Search for budgets containing 'Medela'"_
 - _"Update booking 12345 to 3 hours"_
+- _"Delete time entry 12345"_
+- _"Remove the booking with ID 67890"_
 - _"Show me details for time entry 12345"_
 - _"Find all available Canva projects"_
 - _"Book 6 hours daily from Monday to Friday for sprint work"_
@@ -677,22 +687,6 @@ _This method will be available once Dept creates the Google Cloud project:_
 - **Environment variables not set**: Verify your input prompts are configured
 - **Agent mode not working**: Ensure you're using VS Code 1.101 or later
 
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test with MCP Inspector
-5. Submit a pull request
-
-## License
-
-This project is licensed under the ISC License - see the [package.json](package.json) file for details.
-
----
-
-Built with ❤️ following the GitHub MCP Server pattern for seamless AI integration.
-
 ## Docker Hub Deployment (For Maintainers)
 
 ### Publishing to Docker Hub
@@ -754,3 +748,19 @@ docker run -it --rm \
 ```
 
 Or use in Claude Desktop/VS Code MCP with zero setup required!
+
+---
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test with MCP Inspector
+5. Submit a pull request
+
+## License
+
+This project is licensed under the ISC License - see the [package.json](package.json) file for details.
+
+Built with ❤️ following the GitHub MCP Server pattern for seamless AI integration.

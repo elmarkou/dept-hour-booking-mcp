@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.4] - 2025-07-08
+
+### Added
+
+- **NEW FEATURE**: `delete_hours` tool for removing time entries from the system
+- **Safety Features**: Fetches existing record details before deletion for confirmation
+- **Comprehensive Feedback**: Shows deleted entry information including date, hours, description, project, and budget
+- **Error Handling**: Validates that the time entry exists before attempting deletion
+- **Natural Language Support**: Supports deletion via conversational interface with phrases like "delete time entry X"
+
+### Changed
+
+- Enhanced natural language examples to include deletion operations
+- Updated documentation with comprehensive delete tool usage and safety warnings
+- Improved tool registration to include the new delete functionality
+
+### Technical Details
+
+- Added `DeleteHoursSchema` validation schema for delete requests
+- Implemented safe deletion with pre-fetch validation
+- Enhanced error handling for non-existent time entries
+- Maintains consistency with existing tool patterns and authentication
+
 ## [1.0.3] - 2025-07-07
 
 ### Added

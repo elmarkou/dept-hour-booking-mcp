@@ -234,6 +234,10 @@ const CheckBookedHoursSchema = z.object({
   employeeId: z.string().optional(),
 });
 
+const DeleteHoursSchema = z.object({
+  id: z.string(),
+});
+
 // API helper function
 async function deptApiCall(path: string, options: ApiOptions = {}) {
   const accessToken = await getValidAccessToken();
@@ -268,7 +272,7 @@ async function deptApiCall(path: string, options: ApiOptions = {}) {
 const server = new Server(
   {
     name: "dept-hour-booking",
-    version: "1.0.1",
+    version: "1.0.4",
   },
   {
     capabilities: {
@@ -438,6 +442,20 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             id: {
               type: "string",
               description: "ID of the time entry to retrieve",
+            },
+          },
+          required: ["id"],
+        },
+      },
+      {
+        name: "delete_hours",
+        description: "Delete a time entry from the Dept system",
+        inputSchema: {
+          type: "object",
+          properties: {
+            id: {
+              type: "string",
+              description: "ID of the time entry to delete",
             },
           },
           required: ["id"],
@@ -846,6 +864,51 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             {
               type: "text",
               text: summary + `\n**Full Record**:\n${JSON.stringify(result, null, 2)}`,
+            },
+          ],
+        };
+      }
+
+      case "delete_hours": {
+        const validated = DeleteHoursSchema.parse(args);
+        
+        // Step 1: Fetch existing record to confirm it exists and get details for confirmation
+        const existingRecord = await deptApiCall(`/bookedhours/${validated.id}`, {
+          method: 'GET',
+        });
+
+        if (!existingRecord) {
+          throw new Error(`Time booking with ID ${validated.id} not found`);
+        }
+
+        // Step 2: Delete the record
+        const result = await deptApiCall(`/bookedhours/${validated.id}`, {
+          method: 'DELETE',
+        });
+
+        // Format date for display
+        const formatDate = (dateStr: string) => {
+          if (!dateStr) return 'Unknown';
+          return new Date(dateStr).toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          });
+        };
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: `🗑️ Successfully deleted time entry (ID: ${validated.id})\n\n` +
+                    `**Deleted Entry Details:**\n` +
+                    `- Date: ${formatDate(existingRecord.date)}\n` +
+                    `- Hours: ${existingRecord.hours || 'Unknown'}\n` +
+                    `- Description: ${existingRecord.description || 'No description'}\n` +
+                    `- Project: ${existingRecord.projectName || 'Unknown'}\n` +
+                    `- Budget: ${existingRecord.budgetName || 'Unknown'}\n\n` +
+                    `**Deletion Result:** ${JSON.stringify(result, null, 2)}`,
             },
           ],
         };
