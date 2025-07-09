@@ -232,6 +232,7 @@ const CheckBookedHoursSchema = z.object({
   from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   employeeId: z.string().optional(),
+  id: z.string().optional(),
 });
 
 const DeleteHoursSchema = z.object({
@@ -256,7 +257,13 @@ async function deptApiCall(path: string, options: ApiOptions = {}) {
   
   try {
     const response = await fetch(url, { ...options, headers });
-    const data = await response.json();
+
+    // For DELETE requests, the response may be empty, so only parse JSON if there is content
+    let data: any = null;
+    const contentType = response.headers.get('content-type');
+    if (response.status !== 204 && contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    }
 
     if (!response.ok) {
       throw new Error(`API Error: ${response.status} - ${JSON.stringify(data)}`);
@@ -272,7 +279,7 @@ async function deptApiCall(path: string, options: ApiOptions = {}) {
 const server = new Server(
   {
     name: "dept-hour-booking",
-    version: "1.0.4",
+    version: "1.0.5",
   },
   {
     capabilities: {
@@ -429,24 +436,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               type: "string",
               description: "Employee ID (optional, uses default if not provided)",
             },
+            id: {
+              type: "string",
+              description: "Specific budget ID to check (optional)",
+            },
           },
           required: ["from", "to"],
         },
-      },
-      {
-        name: "get_booked_hour",
-        description: "Get details of a specific booked hour entry by ID",
-        inputSchema: {
-          type: "object",
-          properties: {
-            id: {
-              type: "string",
-              description: "ID of the time entry to retrieve",
-            },
-          },
-          required: ["id"],
-        },
-      },
+      },      
       {
         name: "delete_hours",
         description: "Delete a time entry from the Dept system",
@@ -666,10 +663,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case "update_hours": {
         const validated = UpdateHoursSchema.parse(args);
         
-        // Step 1: Fetch existing record to preserve unchanged fields
-        const existingRecord = await deptApiCall(`/bookedhours/${validated.id}`, {
-          method: 'GET',
-        });
+        // Step 1: Fetch existing record using check_booked_hours (since direct GET is deprecated)
+        const checkResult = await deptApiCall(`/bookedhours/custom/${DEPT_EMPLOYEE_ID}?from=2000-01-01&to=2100-01-01&id=${encodeURIComponent(validated.id)}`);
+        const existingRecord = Array.isArray(checkResult.result)
+          ? checkResult.result.find((entry: BookedHour) => String(entry.id) === String(validated.id))
+          : null;
 
         if (!existingRecord) {
           throw new Error(`Time booking with ID ${validated.id} not found`);
@@ -777,13 +775,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         
         const employeeId = validated.employeeId || DEPT_EMPLOYEE_ID;
         
-        const result = await deptApiCall(
-          `/bookedhours/custom/${employeeId}?from=${validated.from}&to=${validated.to}`
-        );
+        // Support optional budgetId for filtering by specific budget
+        // Never get more date range then 1 week. 
+        // Default from and to to Today.
+        let url = `/bookedhours/custom/${employeeId}?from=${validated.from || new Date().toISOString().split('T')[0]}&to=${validated.to || new Date().toISOString().split('T')[0]}`;
+        if (validated.id) {
+          url += `&id=${encodeURIComponent(validated.id)}`;
+        }
+        const result = await deptApiCall(url);
 
         // Calculate total hours for the period
         const bookedHours = Array.isArray(result) ? result as BookedHour[] : [];
-        const totalHours = bookedHours.reduce((sum: number, entry: BookedHour) => sum + (parseFloat(String(entry.hours)) || 0), 0);
         
         // Format date range for display
         const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString('en-US', { 
@@ -802,11 +804,22 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         });
 
         let summary = `📊 Booked Hours Summary (${formatDate(validated.from)} to ${formatDate(validated.to)})\n\n`;
-        summary += `**Total Hours**: ${totalHours} hours\n`;
-        summary += `**Number of Entries**: ${bookedHours.length}\n\n`;
+        // Use result.result if available (API returns { result: [...] }), otherwise use result directly
+        const entries = Array.isArray(result?.result) ? result.result : (Array.isArray(result) ? result : []);
+        const totalHours = entries.reduce((sum: number, entry: BookedHour) => sum + (parseFloat(String(entry.hours)) || 0), 0);
 
-        if (bookedHours.length > 0) {
+        summary += `**Total Hours**: ${totalHours} hours\n`;
+        summary += `**Number of Entries**: ${entries.length}\n\n`;
+
+        if (entries.length > 0) {
           summary += `**Daily Breakdown**:\n`;
+          // Rebuild byDate using entries to ensure correct grouping
+          const byDate: Record<string, BookedHour[]> = {};
+          entries.forEach((entry: BookedHour) => {
+            const date = entry.date?.split('T')[0] || 'Unknown';
+            if (!byDate[date]) byDate[date] = [];
+            byDate[date].push(entry);
+          });
           Object.keys(byDate).sort().forEach(date => {
             const dayHours = byDate[date].reduce((sum: number, entry: BookedHour) => sum + (parseFloat(String(entry.hours)) || 0), 0);
             summary += `• ${formatDate(date)}: ${dayHours} hours (${byDate[date].length} entries)\n`;
@@ -825,57 +838,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
-      case "get_booked_hour": {
-        const validated = z.object({
-          id: z.string(),
-        }).parse(args);
-        
-        const result = await deptApiCall(`/bookedhours/${validated.id}`, {
-          method: 'GET',
-        });
-
-        if (!result) {
-          throw new Error(`Time booking with ID ${validated.id} not found`);
-        }
-
-        // Format the result for display
-        const formatDate = (dateStr: string) => {
-          if (!dateStr) return 'Unknown';
-          return new Date(dateStr).toLocaleDateString('en-US', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          });
-        };
-
-        const summary = `📝 Time Entry Details (ID: ${validated.id})\n\n` +
-          `**Date**: ${formatDate(result.date)}\n` +
-          `**Hours**: ${result.hours || 'Unknown'}\n` +
-          `**Description**: ${result.description || 'No description'}\n` +
-          `**Employee**: ${result.employeeDisplayName || 'Unknown'}\n` +
-          `**Project**: ${result.projectName || 'Unknown'}\n` +
-          `**Budget**: ${result.budgetName || 'Unknown'}\n` +
-          `**Activity**: ${result.activityName || 'Unknown'}\n` +
-          `**Status**: ${result.isLocked ? 'Locked' : 'Editable'}\n`;
-
-        return {
-          content: [
-            {
-              type: "text",
-              text: summary + `\n**Full Record**:\n${JSON.stringify(result, null, 2)}`,
-            },
-          ],
-        };
-      }
-
       case "delete_hours": {
         const validated = DeleteHoursSchema.parse(args);
         
-        // Step 1: Fetch existing record to confirm it exists and get details for confirmation
-        const existingRecord = await deptApiCall(`/bookedhours/${validated.id}`, {
-          method: 'GET',
-        });
+        // Step 1: Fetch existing record using check_booked_hours (since direct GET is deprecated)
+        const checkResult = await deptApiCall(`/bookedhours/custom/${DEPT_EMPLOYEE_ID}?from=2000-01-01&to=2100-01-01&id=${encodeURIComponent(validated.id)}`);
+        const existingRecord = Array.isArray(checkResult.result)
+          ? checkResult.result.find((entry: BookedHour) => String(entry.id) === String(validated.id))
+          : null;
 
         if (!existingRecord) {
           throw new Error(`Time booking with ID ${validated.id} not found`);

@@ -1,6 +1,6 @@
 # Dept Hour Booking MCP Server
 
-> **✅ Version 1.0.4 - Latest Release**
+> **✅ Version 1.0.5 - Latest Release**
 >
 > **Current Status**: Functional with manual Google API token setup, bulk booking capabilities, and time entry deletion. Full Google OAuth2 integration in progress.
 >
@@ -16,12 +16,29 @@ A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that i
 - **�️ Delete Hours**: Remove time entries from the system with confirmation
 - **�🔍 Search Budgets**: Find available budgets and projects
 - **📋 Check Booked Hours**: View time entries for specific date ranges
-- **📊 Get Hour Details**: Retrieve individual time booking records
 - **🔧 Configurable**: Environment-based configuration
 - **🔒 Secure**: Google ID token authentication with automatic refresh
 - **🐳 Docker Ready**: Easy deployment with Docker Compose
 - **🤖 AI-Ready**: Natural language interface through MCP protocol
 - **⚡ One-Click Install**: Easy installation via VS Code Copilot MCP Extension
+
+## Version 1.0.5 Release Notes
+
+This release introduces several improvements and fixes:
+
+- 📝 **Improved Documentation**: Expanded README with clearer setup instructions, troubleshooting, and configuration details.
+- 🛠️ **Refined Bulk Booking**: Enhanced bulk booking logic for more reliable weekday selection and validation.
+- 🗑️ **Delete Hours Improvements**: Added confirmation and detailed feedback when deleting time entries.
+- 🔒 **Authentication Updates**: Improved Google ID token handling and error messages for authentication failures.
+- 🐳 **Docker Workflow Polishing**: Streamlined Docker scripts and clarified Docker Compose usage.
+- 🧪 **Testing Enhancements**: Added and updated scripts for easier MCP configuration testing.
+- 🧹 **General Cleanup**: Minor bug fixes, codebase cleanup, and improved error handling throughout.
+
+See [CHANGELOG.md](./CHANGELOG.md) for a complete list of changes.
+
+---
+
+### Previous Versions
 
 ## Version 1.0.4 Release Notes
 
@@ -32,40 +49,6 @@ This update introduces time entry deletion capabilities:
 - 📋 **Detailed Feedback**: Shows deleted entry information for verification
 - 🔒 **Secure Operation**: Uses existing authentication and validation patterns
 - 💬 **Natural Language**: Supports deletion via conversational interface
-
-### Previous Versions
-
-#### Version 1.0.3 Release Notes
-
-This update introduces efficient bulk time booking capabilities:
-
-- 🚀 **NEW: Bulk Hours Booking**: Book hours across multiple days in a single operation
-- 📅 **Date Range Support**: Specify start and end dates for bulk booking periods
-- 📆 **Weekday Selection**: Choose which weekdays to include (Monday-Friday by default)
-- ⚡ **Efficient API Usage**: Single API call instead of multiple individual bookings
-- 🔧 **Smart Defaults**: Automatic budget lookup and sensible weekday defaults
-- 📝 **Flexible Descriptions**: Single description applied to all bookings in the range
-
-### Previous Versions
-
-#### Version 1.0.2 Release Notes
-
-This update makes the repository fully portable and zero-setup:
-
-- 🎯 **ZERO SETUP REQUIRED**: Docker configuration automatically builds images on first use
-- 🔧 **Portable Configuration**: Removed hardcoded paths from MCP configurations
-- 🐳 **Auto-Build Docker**: Fixed "Unable to find image" error - now builds automatically
-- 📁 **Universal Compatibility**: Works out-of-the-box in any environment
-- 🔄 **Selective Git Tracking**: Only includes essential VS Code configs, excludes personal settings
-- 📝 **Simplified Installation**: Just clone and use - no manual setup required
-- 📂 **Organized Scripts**: All shell scripts moved to `scripts/` directory for cleaner structure
-- 🚀 **NPM Scripts**: Added convenient npm scripts for all dev/ops tasks (`npm run setup`, `npm run docker:build`, etc.)
-
-### Previous Version (1.0.1) Highlights
-
-- 🔥 **CRITICAL BUG FIX**: Fixed data corruption in `update_hours` endpoint
-- ✅ **Proper PATCH Semantics**: Time entry updates now preserve unmodified fields
-- ✅ **New Tool**: `get_booked_hour` for retrieving individual time booking records
 
 See [CHANGELOG.md](./CHANGELOG.md) for detailed release notes and migration information.
 
@@ -450,10 +433,6 @@ Search for budgets by term.
   "term": "Medela"
 }
 ```
-
-### `get_booked_hour`
-
-Get details of a specific booked hour entry by ID.
 
 **Parameters:**
 

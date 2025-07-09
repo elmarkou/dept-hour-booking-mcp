@@ -55,15 +55,15 @@
       "args": [],
       "cwd": "${workspaceFolder}",
       "env": {
-        "DEPT_CLIENT_ID": "${input:deptClientId}",
-        "DEPT_CLIENT_SECRET": "${input:deptClientSecret}",
-        "DEPT_GOOGLE_ID_TOKEN": "${input:deptGoogleIdToken}",
-        "DEPT_EMPLOYEE_ID": "${input:deptEmployeeId}",
-        "DEPT_CORPORATION_ID": "${input:deptCorporationId}",
-        "DEPT_DEFAULT_ACTIVITY_ID": "${input:deptDefaultActivityId}",
-        "DEPT_DEFAULT_PROJECT_ID": "${input:deptDefaultProjectId}",
-        "DEPT_DEFAULT_COMPANY_ID": "${input:deptDefaultCompanyId}",
-        "DEPT_DEFAULT_BUDGET_ID": "${input:deptDefaultBudgetId}"
+        "DEPT_CLIENT_ID": "17",
+        "DEPT_CLIENT_SECRET": "a7816eec0ec949e38e266a79fe5487818geh2penwnbdsu9ioew",
+        "DEPT_GOOGLE_ID_TOKEN": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjhlOGZjOGU1NTZmN2E3NmQwOGQzNTgyOWQ2ZjkwYWUyZTEyY2ZkMGQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzMjU1NTk0MDU1OS5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsImF1ZCI6IjMyNTU1OTQwNTU5LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTE2MDQwODc5OTgwOTkzNzk5OTgzIiwiaGQiOiJkZXB0YWdlbmN5LmNvbSIsImVtYWlsIjoiZWxtYXIua291d2VuaG92ZW5AZGVwdGFnZW5jeS5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXRfaGFzaCI6IjJYbTlLU0tSZGRIY3BzTXFMQWROX0EiLCJpYXQiOjE3NTIwNjkwMjQsImV4cCI6MTc1MjA3MjYyNH0.dBVcguOYrF6Bo0Uw5rvp120wgsyRBbnZ4opuL_7LPp_fXwKEak4M7bSEMHUqisDDH9qsqmrjnmjK7wHqi4u8fJHTILxjGDWmyhVKmmwyGkbSlsGIX7fQEWcxFKIZRO9V18fTsVXjDyWLsnNDGLfuKlULrjPLa6Z3qWnPWPYNby0P9aSzUsaKhGrx4TqmAd_EAFuwxxgMpwJP5-LUCQ8rBeNeQJrrENZhgG4YZItNtj4h3sXTcqCyc2myoAOxvcBtbaG1QPKpLqbPmIueUd5nsDjiiRlG8l3mOQ-SrZMaYKwG-lg5coK_lPJ-hK5mhLPHhwSmlYWmCY4xQ1g1Ni7UsQ",
+        "DEPT_EMPLOYEE_ID": "3335",
+        "DEPT_CORPORATION_ID": "18",
+        "DEPT_DEFAULT_ACTIVITY_ID": "205",
+        "DEPT_DEFAULT_PROJECT_ID": "54652",
+        "DEPT_DEFAULT_COMPANY_ID": "116092",
+        "DEPT_DEFAULT_BUDGET_ID": "579634"
       }
     }
   }
