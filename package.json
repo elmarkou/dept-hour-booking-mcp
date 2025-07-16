@@ -11,7 +11,6 @@
     "start": "node ./lib/src/index.js",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
-    "auth:google": "node lib/scripts/extract-token.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "setup": "chmod +x scripts/*.sh && ./scripts/setup.sh",
     "setup:mcp": "chmod +x scripts/*.sh && ./scripts/setup-mcp.sh",
