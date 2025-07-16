@@ -50,8 +50,8 @@ ENV DOCKER_CONTAINER=true
 ENV DOTENV_CONFIG_DEBUG=false
 ENV NODE_ENV=production
 
-# Expose port (though we'll primarily use stdio)
 EXPOSE 3000
+EXPOSE 3005
 
 # Default command runs the MCP server in stdio mode
 CMD ["node", "./lib/src/index.js"]

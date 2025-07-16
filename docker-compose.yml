@@ -6,14 +6,17 @@ services:
     image: elmarkou/dept-hourbooking:latest
     environment:
       - DOCKER_CONTAINER=true
-      - DEPT_CLIENT_ID=${DEPT_CLIENT_ID}
-      - DEPT_CLIENT_SECRET=${DEPT_CLIENT_SECRET}
-      - DEPT_GOOGLE_ID_TOKEN=${DEPT_GOOGLE_ID_TOKEN}
       - DEPT_EMPLOYEE_ID=${DEPT_EMPLOYEE_ID}
       - DEPT_CORPORATION_ID=${DEPT_CORPORATION_ID}
       - DEPT_DEFAULT_ACTIVITY_ID=${DEPT_DEFAULT_ACTIVITY_ID}
       - DEPT_DEFAULT_PROJECT_ID=${DEPT_DEFAULT_PROJECT_ID}
       - DEPT_DEFAULT_COMPANY_ID=${DEPT_DEFAULT_COMPANY_ID}
       - DEPT_DEFAULT_BUDGET_ID=${DEPT_DEFAULT_BUDGET_ID}
+
     stdin_open: true
     tty: false
+    ports:
+      - "3000:3000"
+      - "3005:3005"
+    env_file:
+      - .env
