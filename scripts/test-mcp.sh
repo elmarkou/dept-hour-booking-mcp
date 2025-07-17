@@ -6,7 +6,7 @@ echo "🧪 Testing MCP configurations..."
 
 # Test Docker-compose configuration
 echo "Testing Docker-compose configuration..."
-if docker-compose run --rm -T dept-hour-booking --version > /dev/null 2>&1; then
+if docker-compose run --rm -T dept-hourbooking --version > /dev/null 2>&1; then
     echo "✅ Docker-compose configuration is working"
 else
     echo "❌ Docker-compose configuration failed"

@@ -1,0 +1,13 @@
+export const DEPT_CLIENT_ID = process.env.DEPT_CLIENT_ID;
+export const DEPT_CLIENT_SECRET = process.env.DEPT_CLIENT_SECRET;
+export const DEPT_API_BASE_URL = process.env.DEPT_API_BASE_URL || "https://deptapps-api.deptagency.com/public/api/v1";
+export const DEPT_TOKEN_URL = process.env.DEPT_TOKEN_URL || "https://deptapps-api.deptagency.com/public/api/token";
+export const DEPT_EMPLOYEE_ID = process.env.DEPT_EMPLOYEE_ID;
+export const DEPT_CORPORATION_ID = process.env.DEPT_CORPORATION_ID;
+export const DEPT_DEFAULT_ACTIVITY_ID = process.env.DEPT_DEFAULT_ACTIVITY_ID;
+export const DEPT_DEFAULT_PROJECT_ID = process.env.DEPT_DEFAULT_PROJECT_ID;
+export const DEPT_DEFAULT_COMPANY_ID = process.env.DEPT_DEFAULT_COMPANY_ID;
+export const DEPT_DEFAULT_BUDGET_ID = process.env.DEPT_DEFAULT_BUDGET_ID;
+export const GOOGLE_AUTH_CLIENT_ID = process.env.GOOGLE_AUTH_CLIENT_ID;
+export const GOOGLE_AUTH_CLIENT_SECRET = process.env.GOOGLE_AUTH_CLIENT_SECRET;
+export const DOCKER_CONTAINER = process.env.DOCKER_CONTAINER;

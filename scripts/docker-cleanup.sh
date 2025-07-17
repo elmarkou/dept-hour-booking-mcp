@@ -10,15 +10,15 @@ echo "Stopping running containers..."
 docker-compose down 2>/dev/null || true
 
 # Force stop and remove ALL containers using our specific image
-echo "🔍 Finding containers with depthourbooking-dept-hour-booking image..."
-ALL_CONTAINERS=$(docker ps -aq --filter "ancestor=depthourbooking-dept-hour-booking" 2>/dev/null || true)
+echo "🔍 Finding containers with depthourbooking-dept-hourbooking image..."
+ALL_CONTAINERS=$(docker ps -aq --filter "ancestor=depthourbooking-dept-hourbooking" 2>/dev/null || true)
 if [ ! -z "$ALL_CONTAINERS" ]; then
     echo "⚠️  Found containers, stopping and removing them..."
     docker stop $ALL_CONTAINERS 2>/dev/null || true
     docker rm $ALL_CONTAINERS 2>/dev/null || true
     echo "✅ Removed containers: $ALL_CONTAINERS"
 else
-    echo "ℹ️  No containers found with depthourbooking-dept-hour-booking image"
+    echo "ℹ️  No containers found with depthourbooking-dept-hourbooking image"
 fi
 
 # Remove all stopped containers with 'dept' or 'hourbooking' in the name

@@ -1,10 +1,8 @@
 # Dept Hour Booking MCP Server
 
-> **✅ Version 1.0.5 - Latest Release**
+> **✅ Version 1.1.0 - Latest Release**
 >
-> **Current Status**: Functional with manual Google API token setup, bulk booking capabilities, and time entry deletion. Full Google OAuth2 integration in progress.
->
-> **Latest Update**: Added delete hours functionality for removing time entries from the system.
+> **Current Status**: Functional with Google Auth, bulk booking capabilities, and time entry deletion.
 
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that integrates with the Dept Public API for time tracking and project management. Built following the same patterns as the [GitHub MCP Server](https://github.com/github/github-mcp-server).
 
@@ -13,16 +11,16 @@ A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that i
 - **📝 Book Hours**: Create individual time entries with automatic budget lookup
 - **📅 Bulk Book Hours**: Efficiently book hours across multiple days with date range and weekday selection
 - **✏️ Update Hours**: Modify existing time bookings with proper data preservation
-- **�️ Delete Hours**: Remove time entries from the system with confirmation
-- **�🔍 Search Budgets**: Find available budgets and projects
+- **🗑️ Delete Hours**: Remove time entries from the system with confirmation
+- **🔍 Search Budgets**: Find available budgets and projects
 - **📋 Check Booked Hours**: View time entries for specific date ranges
+- **🔎 Search Internal Budgets**: Quickly find internal budgets (e.g., vacation, holiday, illness)
 - **🔧 Configurable**: Environment-based configuration
 - **🔒 Secure**: Google ID token authentication with automatic refresh
 - **🐳 Docker Ready**: Easy deployment with Docker Compose
 - **🤖 AI-Ready**: Natural language interface through MCP protocol
-- **⚡ One-Click Install**: Easy installation via VS Code Copilot MCP Extension
 
-## Version 1.0.5 Release Notes
+## Version 1.1.0 Release Notes
 
 This release introduces several improvements and fixes:
 
@@ -37,20 +35,6 @@ This release introduces several improvements and fixes:
 See [CHANGELOG.md](./CHANGELOG.md) for a complete list of changes.
 
 ---
-
-### Previous Versions
-
-## Version 1.0.4 Release Notes
-
-This update introduces time entry deletion capabilities:
-
-- 🗑️ **NEW: Delete Hours Tool**: Remove time entries from the system with confirmation
-- ⚠️ **Safety Features**: Fetches entry details before deletion for confirmation
-- 📋 **Detailed Feedback**: Shows deleted entry information for verification
-- 🔒 **Secure Operation**: Uses existing authentication and validation patterns
-- 💬 **Natural Language**: Supports deletion via conversational interface
-
-See [CHANGELOG.md](./CHANGELOG.md) for detailed release notes and migration information.
 
 ## Quick Start
 
@@ -81,7 +65,7 @@ See [CHANGELOG.md](./CHANGELOG.md) for detailed release notes and migration info
 
    ```bash
    git clone <your-repo>
-   cd dept-hour-booking
+   cd dept-hourbooking
    ```
 
 2. **Use the Docker Hub configuration:**
@@ -96,7 +80,7 @@ See [CHANGELOG.md](./CHANGELOG.md) for detailed release notes and migration info
 
    ```bash
    git clone <your-repo>
-   cd dept-hour-booking
+   cd dept-hourbooking
    ```
 
 2. **Use the local build configuration:**
@@ -180,7 +164,6 @@ The server includes three ready-to-use MCP configurations:
 
 - **Dept Client ID**: Your Dept client ID (typically "17")
 - **Dept Client Secret**: Your client secret (contact Dept admin if needed)
-- **Google ID Token**: Obtain from Google OAuth (see Getting Credentials section)
 - **Employee ID**: Your Dept employee ID
 - **Corporation ID**: Your Dept corporation ID
 - **Default Activity ID, Project ID, Company ID, Budget ID**: Your default IDs
@@ -201,7 +184,7 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
 ```json
 {
   "mcpServers": {
-    "dept-hour-booking": {
+    "dept-hourbooking": {
       "command": "docker",
       "args": [
         "run",
@@ -211,8 +194,6 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
         "DEPT_CLIENT_ID=17",
         "-e",
         "DEPT_CLIENT_SECRET=<YOUR_CLIENT_SECRET>",
-        "-e",
-        "DEPT_GOOGLE_ID_TOKEN=<YOUR_GOOGLE_ID_TOKEN>",
         "-e",
         "DEPT_EMPLOYEE_ID=<YOUR_EMPLOYEE_ID>",
         "-e",
@@ -239,14 +220,13 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
 ```json
 {
   "mcpServers": {
-    "dept-hour-booking": {
+    "dept-hourbooking": {
       "command": "docker-compose",
-      "args": ["run", "--rm", "-T", "dept-hour-booking"],
-      "cwd": "/absolute/path/to/your/dept-hour-booking",
+      "args": ["run", "--rm", "-T", "dept-hourbooking"],
+      "cwd": "/absolute/path/to/your/dept-hourbooking",
       "env": {
         "DEPT_CLIENT_ID": "17",
         "DEPT_CLIENT_SECRET": "<YOUR_CLIENT_SECRET>",
-        "DEPT_GOOGLE_ID_TOKEN": "<YOUR_GOOGLE_ID_TOKEN>",
         "DEPT_EMPLOYEE_ID": "<YOUR_EMPLOYEE_ID>",
         "DEPT_CORPORATION_ID": "<YOUR_CORPORATION_ID>",
         "DEPT_DEFAULT_ACTIVITY_ID": "<YOUR_DEFAULT_ACTIVITY_ID>",
@@ -264,14 +244,13 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
 ```json
 {
   "mcpServers": {
-    "dept-hour-booking": {
+    "dept-hourbooking": {
       "command": "node",
       "args": ["./lib/src/index.js"],
-      "cwd": "/absolute/path/to/your/dept-hour-booking",
+      "cwd": "/absolute/path/to/your/dept-hourbooking",
       "env": {
         "DEPT_CLIENT_ID": "17",
         "DEPT_CLIENT_SECRET": "<YOUR_CLIENT_SECRET>",
-        "DEPT_GOOGLE_ID_TOKEN": "<YOUR_GOOGLE_ID_TOKEN>",
         "DEPT_EMPLOYEE_ID": "<YOUR_EMPLOYEE_ID>",
         "DEPT_CORPORATION_ID": "<YOUR_CORPORATION_ID>",
         "DEPT_DEFAULT_ACTIVITY_ID": "<YOUR_DEFAULT_ACTIVITY_ID>",
@@ -287,22 +266,17 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
 **Notes**:
 
 - **Option 1 (Docker Hub)**: ⭐ **RECOMMENDED** - No setup required, works anywhere with Docker, **no `cwd` needed**
-- **Option 2 (Local Build)**: Requires cloning repository and replacing `/absolute/path/to/your/dept-hour-booking` with actual path
+- **Option 2 (Local Build)**: Requires cloning repository and replacing `/absolute/path/to/your/dept-hourbooking` with actual path
 - **Option 3 (Node.js)**: Requires running `npm install && npm run build` first and setting correct `cwd` path
 - **Examples of absolute paths**:
-  - macOS/Linux: `/Users/yourname/projects/dept-hour-booking` or `/home/yourname/dept-hour-booking`
-  - Windows: `C:\\Users\\yourname\\projects\\dept-hour-booking`
+  - macOS/Linux: `/Users/yourname/projects/dept-hourbooking` or `/home/yourname/dept-hourbooking`
+  - Windows: `C:\\Users\\yourname\\projects\\dept-hourbooking`
 
 ## Prerequisites
 
 1. **Docker**: Required for containerized deployment
-2. **Google Cloud Project**: ⚠️ **DEPT must create a Google Cloud project** with OAuth 2.0 credentials
-3. **Google ID Token**: Google OAuth token from your @deptagency.com account (requires step 2)
-4. **Dept Credentials**: Client secret and account IDs from your Dept administrator
-
-## ⚠️ Important: Google Cloud Setup Required
-
-**This project currently requires Dept administration to set up a Google Cloud project.**
+2. **Google Cloud Project**: with OAuth 2.0 credentials
+3. **Dept Credentials**: Client secret and account IDs from your Dept administrator
 
 **What Dept needs to do:**
 
@@ -315,15 +289,12 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
 
 ## Configuration
 
-> **🚧 IN PROGRESS**: Authentication flow is implemented but requires Google Cloud project setup by Dept administration.
-
 The server is configured through environment variables:
 
 | Variable                   | Description                           | Required |
 | -------------------------- | ------------------------------------- | -------- |
 | `DEPT_CLIENT_ID`           | Dept OAuth client ID (typically "17") | Yes      |
 | `DEPT_CLIENT_SECRET`       | Your Dept OAuth client secret         | Yes      |
-| `DEPT_GOOGLE_ID_TOKEN`     | Google ID token from OAuth flow       | Yes      |
 | `DEPT_EMPLOYEE_ID`         | Your Dept employee ID                 | Yes      |
 | `DEPT_CORPORATION_ID`      | Your Dept corporation ID              | Yes      |
 | `DEPT_DEFAULT_BUDGET_ID`   | Default budget ID for time entries    | Yes      |
@@ -335,16 +306,23 @@ The server is configured through environment variables:
 
 ## Available Tools
 
-### `book_hours`
+### Booking Hours: Single vs. Bulk
 
-Book time entry in Dept system.
+> **Best Practice:**
+>
+> - Use `book_hours` for single date bookings.
+> - Use `book_hours_bulk` for multiple dates, date ranges, or repeated bookings.
+
+#### `book_hours` (Single Date)
+
+Book a time entry for a single date in the Dept system.
 
 **Parameters:**
 
 - `hours` (number): Hours to book (0.1-24)
 - `date` (string): Date in YYYY-MM-DD format
 - `description` (string): Work description
-- `budgetId` (string, optional): Budget ID (auto-searches if not provided)
+- `budgetId` (number, optional): Budget ID (auto-searches if not provided)
 
 **Example:**
 
@@ -356,9 +334,9 @@ Book time entry in Dept system.
 }
 ```
 
-### `book_hours_bulk`
+#### `book_hours_bulk` (Multiple Dates / Range / Repeat)
 
-Book time entries across multiple days in a single operation.
+Book time entries across multiple days, a date range, or selected weekdays in a single operation.
 
 **Parameters:**
 
@@ -366,7 +344,7 @@ Book time entries across multiple days in a single operation.
 - `startDate` (string): Start date in YYYY-MM-DD format
 - `endDate` (string): End date in YYYY-MM-DD format
 - `description` (string): Work description for all entries
-- `budgetId` (string, optional): Budget ID (auto-searches if not provided)
+- `budgetId` (number, optional): Budget ID (auto-searches if not provided)
 - `weekdays` (object, optional): Which weekdays to include (defaults to Monday-Friday)
   - `monday` (boolean): Include Monday (default: true)
   - `tuesday` (boolean): Include Tuesday (default: true)
@@ -395,6 +373,16 @@ Book time entries across multiple days in a single operation.
   }
 }
 ```
+
+> **Note:**
+>
+> - Always use `book_hours_bulk` for booking hours across multiple dates, a range, or repeated weekdays. This is more efficient and ensures correct handling of bulk operations.
+> - `book_hours` should only be used for single date bookings.
+
+**Natural Language Examples:**
+
+- _"Book 8 hours per day from Monday to Friday next week for NDH-2286"_ → uses `book_hours_bulk`
+- _"Book 2 hours for NDH-2286 today"_ → uses `book_hours`
 
 ### `update_hours`
 
@@ -431,6 +419,22 @@ Search for budgets by term.
 ```json
 {
   "term": "Medela"
+}
+```
+
+### `search_internal_budgets`
+
+Search for internal budgets by term.
+
+**Parameters:**
+
+- `searchTerm` (string): Search term (e.g., "vacation", "internal", "holiday")
+
+**Example:**
+
+```json
+{
+  "searchTerm": "vacation"
 }
 ```
 
@@ -471,6 +475,7 @@ Once configured, you can interact with the server using natural language:
 - _"Book 2 hours for NDH-2286 development work today"_
 - _"Book 8 hours per day for this week working on project development"_
 - _"Search for budgets containing 'Medela'"_
+- _"Search for internal budgets like vacation or illness"_
 - _"Update booking 12345 to 3 hours"_
 - _"Delete time entry 12345"_
 - _"Remove the booking with ID 67890"_
@@ -540,17 +545,16 @@ Or manually:
 
 ```bash
 # Build the image
-docker build -t depthourbooking-dept-hour-booking .
+docker build -t depthourbooking-dept-hourbooking .
 
 # Run the container
 docker run -i --rm \
   -e DEPT_CLIENT_ID="17" \
   -e DEPT_CLIENT_SECRET="your_client_secret" \
-  -e DEPT_GOOGLE_ID_TOKEN="your_google_id_token" \
   -e DEPT_EMPLOYEE_ID="your_employee_id" \
   -e DEPT_CORPORATION_ID="your_corporation_id" \
   -e DEPT_DEFAULT_BUDGET_ID="your_budget_id" \
-  depthourbooking-dept-hour-booking
+  depthourbooking-dept-hourbooking
 ```
 
 ## Project Structure
@@ -563,7 +567,6 @@ docker run -i --rm \
 │   ├── setup-mcp.sh          # Automated MCP setup script
 │   ├── test-mcp.sh           # Test script for MCP configurations
 │   ├── run-mcp.sh            # Run MCP server with Docker
-│   ├── run-mcp-docker.sh     # Run MCP server directly with Docker
 │   ├── build-and-push.sh     # Build and push Docker image
 │   ├── pull-image.sh         # Pull Docker image from registry
 │   └── docker-cleanup.sh     # Clean up Docker resources
@@ -597,8 +600,7 @@ To get your Dept credentials:
 
 1. **Client ID**: Typically "17" (standard Dept client ID)
 2. **Client Secret**: Contact your Dept administrator
-3. **Google ID Token**: Obtain from Google OAuth flow (see below)
-4. **Employee/Corporation IDs**: Available in your Dept profile or from administrator
+3. **Employee/Corporation IDs**: Available in your Dept profile or from administrator
 
 ### Getting a Google ID Token
 
@@ -720,7 +722,6 @@ Users can now use the MCP server without any local setup:
 docker run -it --rm \
   -e DEPT_CLIENT_ID="17" \
   -e DEPT_CLIENT_SECRET="your_secret" \
-  -e DEPT_GOOGLE_ID_TOKEN="your_token" \
   -e DEPT_EMPLOYEE_ID="your_id" \
   -e DEPT_CORPORATION_ID="your_corp_id" \
   elmarkou/dept-hourbooking:latest

@@ -23,4 +23,4 @@ docker-compose.yml
 .dockerignore
 eslint.config.js
 scripts/
-public_API.json
+swagger.json

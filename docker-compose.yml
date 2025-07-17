@@ -1,5 +1,5 @@
 services:
-  dept-hour-booking:
+  dept-hourbooking:
     build:
       context: .
       dockerfile: Dockerfile
@@ -12,7 +12,6 @@ services:
       - DEPT_DEFAULT_PROJECT_ID=${DEPT_DEFAULT_PROJECT_ID}
       - DEPT_DEFAULT_COMPANY_ID=${DEPT_DEFAULT_COMPANY_ID}
       - DEPT_DEFAULT_BUDGET_ID=${DEPT_DEFAULT_BUDGET_ID}
-
     stdin_open: true
     tty: false
     ports:

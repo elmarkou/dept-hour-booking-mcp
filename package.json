@@ -1,11 +1,12 @@
 {
   "name": "depthourbooking",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "Dept Hour Booking MCP Server - Google OAuth2 authenticated time tracking integration",
   "type": "module",
   "main": "./lib/src/index.js",
   "scripts": {
     "dev:stdio": "nodemon --quiet --exec node --signal SIGINT -r ts-node/register ./src/index.ts",
+    "dev:sse": "nodemon --quiet --exec node --signal SIGINT --loader ts-node/esm ./src/index.ts",
     "dev:inspector": "mcp-inspector",
     "build": "tsc --build",
     "start": "node ./lib/src/index.js",
@@ -16,7 +17,6 @@
     "setup:mcp": "chmod +x scripts/*.sh && ./scripts/setup-mcp.sh",
     "docker:build": "docker-compose build",
     "docker:run": "chmod +x scripts/*.sh && ./scripts/run-mcp.sh",
-    "docker:run-direct": "chmod +x scripts/*.sh && ./scripts/run-mcp-docker.sh",
     "docker:cleanup": "chmod +x scripts/*.sh && ./scripts/docker-cleanup.sh",
     "docker:pull": "chmod +x scripts/*.sh && ./scripts/pull-image.sh",
     "docker:deploy": "chmod +x scripts/*.sh && ./scripts/build-and-push.sh",

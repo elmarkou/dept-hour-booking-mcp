@@ -19,7 +19,7 @@ docker-compose up -d
 
 Without a fixed container name, Docker may create containers with random names.
 
-**Solution:** ✅ Fixed - Added `container_name: dept-hour-booking` to docker-compose.yml
+**Solution:** ✅ Fixed - Added `container_name: dept-hourbooking` to docker-compose.yml
 
 ### 3. **Running docker run commands directly**
 

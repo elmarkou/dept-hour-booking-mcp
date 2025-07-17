@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2025-07-17
+
+### Added
+
+- 🔑 **Google OAuth2 Authentication**: Integrated Google OAuth2 login flow, enabling users to securely sign in with their Google accounts. Includes automatic token refresh and improved error handling for authentication failures.
+- 🧰 **Internal Budgets Management Tool**: Introduced a new tool for searching, viewing, and managing internal budgets. Supports budget lookup by project, department, and custom filters, with real-time feedback and validation.
+- **Tool:** `search_internal_budget` – Allows querying and managing internal budgets with flexible filters.
+- 🛠️ **Tool Registration**: Registered the internal budgets tool in the MCP configuration for seamless access via the conversational interface.
+
+### Changed
+
+- 🛠️ **Dependency Updates**: Upgraded development dependencies including ESLint, TypeScript, Nodemon, and related plugins for improved linting, type safety, and development workflow.
+- 🧹 **General Maintenance**: Minor updates to package-lock for consistency and security.
+
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
