@@ -1,6 +1,6 @@
 # Dept Hour Booking MCP Server
 
-> **✅ Version 1.1.0 - Latest Release**
+> **✅ Version 1.1.1 - Latest Release**
 >
 > **Current Status**: Functional with Google Auth, bulk booking capabilities, and time entry deletion.
 
@@ -20,9 +20,9 @@ A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that i
 - **🐳 Docker Ready**: Easy deployment with Docker Compose
 - **🤖 AI-Ready**: Natural language interface through MCP protocol
 
-## Version 1.1.0 Release Notes
+## Version 1.1.1 Release Notes
 
-This release introduces several improvements and fixes:
+This release introduces several improvements and fixes (see CHANGELOG for details):
 
 - 📝 **Improved Documentation**: Expanded README with clearer setup instructions, troubleshooting, and configuration details.
 - 🛠️ **Refined Bulk Booking**: Enhanced bulk booking logic for more reliable weekday selection and validation.
@@ -190,10 +190,10 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
         "run",
         "-i",
         "--rm",
-        "-e",
-        "DEPT_CLIENT_ID=17",
-        "-e",
-        "DEPT_CLIENT_SECRET=<YOUR_CLIENT_SECRET>",
+        "-p",
+        "3000:3000",
+        "-p",
+        "3005:3005",
         "-e",
         "DEPT_EMPLOYEE_ID=<YOUR_EMPLOYEE_ID>",
         "-e",
@@ -222,11 +222,18 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
   "mcpServers": {
     "dept-hourbooking": {
       "command": "docker-compose",
-      "args": ["run", "--rm", "-T", "dept-hourbooking"],
+      "args": [
+        "run",
+        "--rm",
+        "-T",
+        "-p",
+        "3000:3000",
+        "-p",
+        "3005:3005",
+        "dept-hourbooking"
+      ],
       "cwd": "/absolute/path/to/your/dept-hourbooking",
       "env": {
-        "DEPT_CLIENT_ID": "17",
-        "DEPT_CLIENT_SECRET": "<YOUR_CLIENT_SECRET>",
         "DEPT_EMPLOYEE_ID": "<YOUR_EMPLOYEE_ID>",
         "DEPT_CORPORATION_ID": "<YOUR_CORPORATION_ID>",
         "DEPT_DEFAULT_ACTIVITY_ID": "<YOUR_DEFAULT_ACTIVITY_ID>",
@@ -249,8 +256,6 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
       "args": ["./lib/src/index.js"],
       "cwd": "/absolute/path/to/your/dept-hourbooking",
       "env": {
-        "DEPT_CLIENT_ID": "17",
-        "DEPT_CLIENT_SECRET": "<YOUR_CLIENT_SECRET>",
         "DEPT_EMPLOYEE_ID": "<YOUR_EMPLOYEE_ID>",
         "DEPT_CORPORATION_ID": "<YOUR_CORPORATION_ID>",
         "DEPT_DEFAULT_ACTIVITY_ID": "<YOUR_DEFAULT_ACTIVITY_ID>",
@@ -276,33 +281,19 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
 
 1. **Docker**: Required for containerized deployment
 2. **Google Cloud Project**: with OAuth 2.0 credentials
-3. **Dept Credentials**: Client secret and account IDs from your Dept administrator
-
-**What Dept needs to do:**
-
-1. **Create Google Cloud Project**: Set up a new Google Cloud project for Dept MCP integrations
-2. **Configure OAuth 2.0**: Create OAuth 2.0 client credentials for the application
-3. **Set Authorized Domains**: Configure `@deptagency.com` as authorized domain
-4. **Provide Client Credentials**: Share the OAuth client ID and client secret
-
-**Current Status**: The authentication flow is implemented and ready, but needs proper Google Cloud project configuration to work with Dept's domain restrictions.
 
 ## Configuration
 
 The server is configured through environment variables:
 
-| Variable                   | Description                           | Required |
-| -------------------------- | ------------------------------------- | -------- |
-| `DEPT_CLIENT_ID`           | Dept OAuth client ID (typically "17") | Yes      |
-| `DEPT_CLIENT_SECRET`       | Your Dept OAuth client secret         | Yes      |
-| `DEPT_EMPLOYEE_ID`         | Your Dept employee ID                 | Yes      |
-| `DEPT_CORPORATION_ID`      | Your Dept corporation ID              | Yes      |
-| `DEPT_DEFAULT_BUDGET_ID`   | Default budget ID for time entries    | Yes      |
-| `DEPT_DEFAULT_ACTIVITY_ID` | Default activity ID                   | No       |
-| `DEPT_DEFAULT_PROJECT_ID`  | Default project ID                    | No       |
-| `DEPT_DEFAULT_COMPANY_ID`  | Default company ID                    | No       |
-
-> **Note**: `DEPT_API_BASE_URL` and `DEPT_TOKEN_URL` are now hardcoded in the application and don't need to be set as environment variables.
+| Variable                   | Description                        | Required |
+| -------------------------- | ---------------------------------- | -------- |
+| `DEPT_EMPLOYEE_ID`         | Your Dept employee ID              | Yes      |
+| `DEPT_CORPORATION_ID`      | Your Dept corporation ID           | Yes      |
+| `DEPT_DEFAULT_BUDGET_ID`   | Default budget ID for time entries | Yes      |
+| `DEPT_DEFAULT_ACTIVITY_ID` | Default activity ID                | No       |
+| `DEPT_DEFAULT_PROJECT_ID`  | Default project ID                 | No       |
+| `DEPT_DEFAULT_COMPANY_ID`  | Default company ID                 | No       |
 
 ## Available Tools
 
@@ -549,10 +540,12 @@ docker build -t depthourbooking-dept-hourbooking .
 
 # Run the container
 docker run -i --rm \
-  -e DEPT_CLIENT_ID="17" \
-  -e DEPT_CLIENT_SECRET="your_client_secret" \
+  -p 3000:3000 -p 3005:3005 \
   -e DEPT_EMPLOYEE_ID="your_employee_id" \
   -e DEPT_CORPORATION_ID="your_corporation_id" \
+  -e DEPT_DEFAULT_ACTIVITY_ID="your_activity_id" \
+  -e DEPT_DEFAULT_PROJECT_ID="your_project_id" \
+  -e DEPT_DEFAULT_COMPANY_ID="your_company_id" \
   -e DEPT_DEFAULT_BUDGET_ID="your_budget_id" \
   depthourbooking-dept-hourbooking
 ```
@@ -604,37 +597,18 @@ To get your Dept credentials:
 
 ### Getting a Google ID Token
 
-> **⚠️ Currently Blocked**: This step requires Dept to create a Google Cloud project first.
+## Authentication Flow (First-Time Users)
 
-**🎯 Method 1 - Browser Developer Tools (Temporary Workaround):**
+When you access the system for the first time, you will see a prompt indicating that you are not authenticated. The server will direct you to the Google SSO (Single Sign-On) page to complete authentication.
 
-1. Go to https://time.deptagency.com
-2. Sign in with your @deptagency.com account
-3. Open Developer Tools (F12) → Network tab
-4. Look for requests to authenticate endpoints
-5. Find the Google ID token in the request/response data
+**Steps:**
 
-**🎯 Method 2 - Google Cloud OAuth (Requires Dept Setup):**
+1. Follow the prompt to open the Google SSO page in your browser.
+2. Sign in with your Google account as required.
+3. After successful authentication, you can close the browser window.
+4. Return to Copilot and confirm that you are authenticated to continue using the system.
 
-_This method will be available once Dept creates the Google Cloud project:_
-
-1. Use Google OAuth 2.0 with parameters from Dept's Google Cloud project:
-
-   - **Client ID**: `[TO BE PROVIDED BY DEPT]`
-   - **Scope**: `openid email profile`
-   - **Response Type**: `id_token`
-   - **Redirect URI**: `[TO BE CONFIGURED BY DEPT]`
-
-2. The resulting `id_token` is what you need for `DEPT_GOOGLE_ID_TOKEN`
-
-**📋 What Dept Administration Needs to Provide:**
-
-- Google Cloud project OAuth 2.0 client ID
-- Authorized redirect URIs for the OAuth flow
-- Domain verification for `@deptagency.com` emails
-- Client secret for the OAuth application
-
-> **Note**: The current implementation accepts any valid Google ID token through the `DEPT_GOOGLE_ID_TOKEN` environment variable. The source of this token (whether from time.deptagency.com or a dedicated Google Cloud project) is flexible, but a dedicated Google Cloud project would provide better control, security, and reliability for the MCP server.
+This process ensures secure access and is only required on your first use or if your authentication expires.
 
 ## Troubleshooting
 
@@ -710,7 +684,7 @@ The project includes npm scripts for easy Docker Hub deployment:
 The Docker Hub image is published as:
 
 - **Repository**: `elmarkou/dept-hourbooking`
-- **Tags**: `latest`, `1.0.2`, etc.
+- **Tags**: `latest`, `1.1.1`, etc.
 - **URL**: https://hub.docker.com/r/elmarkou/dept-hourbooking
 
 ### Using Docker Hub Image
@@ -720,10 +694,13 @@ Users can now use the MCP server without any local setup:
 ```bash
 # Pull and run directly
 docker run -it --rm \
-  -e DEPT_CLIENT_ID="17" \
-  -e DEPT_CLIENT_SECRET="your_secret" \
+  -p 3000:3000 -p 3005:3005 \
   -e DEPT_EMPLOYEE_ID="your_id" \
   -e DEPT_CORPORATION_ID="your_corp_id" \
+  -e DEPT_DEFAULT_ACTIVITY_ID="your_activity_id" \
+  -e DEPT_DEFAULT_PROJECT_ID="your_project_id" \
+  -e DEPT_DEFAULT_COMPANY_ID="your_company_id" \
+  -e DEPT_DEFAULT_BUDGET_ID="your_budget_id" \
   elmarkou/dept-hourbooking:latest
 ```
 

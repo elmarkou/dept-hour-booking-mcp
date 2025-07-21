@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { book_hours } from "./tools/book_hours.js";
 import fs from "fs";
 import path from "path";
@@ -25,7 +26,7 @@ async function main() {
     const server = new Server(
       {
         name: "dept-hourbooking",
-        version: "1.1.0",
+        version: "1.1.1",
       },
       {
         capabilities: {

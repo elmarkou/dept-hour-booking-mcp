@@ -1,3 +1,11 @@
+# [1.1.1] - 2025-07-21
+
+### Changed
+
+- 📄 **Documentation Improvements**: Updated README and DOCKER_GUIDE to clarify Docker port publishing and environment variable usage for all run/config examples.
+- 🐳 **Docker Examples**: All Docker run and configuration examples now include `-p 3000:3000 -p 3005:3005` and all required `-e` environment variables for correct operation.
+- 📝 **Version Bump**: Updated all version references to 1.1.1 in documentation and Docker Hub tags.
+
 # Changelog
 
 All notable changes to this project will be documented in this file.

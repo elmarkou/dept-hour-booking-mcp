@@ -29,6 +29,9 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
+# Copy .env file for environment variables
+COPY .env ./
+
 # Install ONLY production dependencies
 RUN npm ci --omit=dev && npm cache clean --force
 

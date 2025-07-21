@@ -1,3 +1,21 @@
+## Manual docker run (if not using docker-compose)
+
+If you need to run the container directly (not recommended for most workflows), make sure to publish the required ports:
+
+```bash
+docker run -it --rm \
+  -p 3000:3000 -p 3005:3005 \
+  -e DEPT_EMPLOYEE_ID="your_id" \
+  -e DEPT_CORPORATION_ID="your_corp_id" \
+  -e DEPT_DEFAULT_ACTIVITY_ID="your_activity_id" \
+  -e DEPT_DEFAULT_PROJECT_ID="your_project_id" \
+  -e DEPT_DEFAULT_COMPANY_ID="your_company_id" \
+  -e DEPT_DEFAULT_BUDGET_ID="your_budget_id" \
+  elmarkou/dept-hourbooking:latest
+```
+
+This ensures the MCP server is accessible on ports 3000 and 3005 from your host.
+
 # Docker Container Management Guide
 
 ## Common Causes of Multiple Containers
