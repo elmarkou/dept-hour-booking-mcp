@@ -4,7 +4,7 @@ If you need to run the container directly (not recommended for most workflows), 
 
 ```bash
 docker run -it --rm \
-  -p 3000:3000 -p 3005:3005 \
+  -p 3100:3100 -p 3005:3005 \
   -e DEPT_EMPLOYEE_ID="your_id" \
   -e DEPT_CORPORATION_ID="your_corp_id" \
   -e DEPT_DEFAULT_ACTIVITY_ID="your_activity_id" \
@@ -14,7 +14,7 @@ docker run -it --rm \
   elmarkou/dept-hourbooking:latest
 ```
 
-This ensures the MCP server is accessible on ports 3000 and 3005 from your host.
+This ensures the MCP server is accessible on ports 3100 and 3005 from your host.
 
 # Docker Container Management Guide
 

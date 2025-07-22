@@ -15,7 +15,7 @@ services:
     stdin_open: true
     tty: false
     ports:
-      - "3000:3000"
+      - "3100:3100"
       - "3005:3005"
     env_file:
       - .env

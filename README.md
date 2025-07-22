@@ -191,7 +191,7 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
         "-i",
         "--rm",
         "-p",
-        "3000:3000",
+        "3100:3100",
         "-p",
         "3005:3005",
         "-e",
@@ -227,7 +227,7 @@ Add to your Claude Desktop MCP settings (`claude_desktop_config.json`):
         "--rm",
         "-T",
         "-p",
-        "3000:3000",
+        "3100:3100",
         "-p",
         "3005:3005",
         "dept-hourbooking"
@@ -540,7 +540,7 @@ docker build -t depthourbooking-dept-hourbooking .
 
 # Run the container
 docker run -i --rm \
-  -p 3000:3000 -p 3005:3005 \
+  -p 3100:3100 -p 3005:3005 \
   -e DEPT_EMPLOYEE_ID="your_employee_id" \
   -e DEPT_CORPORATION_ID="your_corporation_id" \
   -e DEPT_DEFAULT_ACTIVITY_ID="your_activity_id" \
@@ -694,7 +694,7 @@ Users can now use the MCP server without any local setup:
 ```bash
 # Pull and run directly
 docker run -it --rm \
-  -p 3000:3000 -p 3005:3005 \
+  -p 3100:3100 -p 3005:3005 \
   -e DEPT_EMPLOYEE_ID="your_id" \
   -e DEPT_CORPORATION_ID="your_corp_id" \
   -e DEPT_DEFAULT_ACTIVITY_ID="your_activity_id" \

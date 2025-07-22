@@ -53,7 +53,7 @@ ENV DOCKER_CONTAINER=true
 ENV DOTENV_CONFIG_DEBUG=false
 ENV NODE_ENV=production
 
-EXPOSE 3000
+EXPOSE 3100
 EXPOSE 3005
 
 # Default command runs the MCP server in stdio mode

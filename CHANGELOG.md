@@ -3,7 +3,7 @@
 ### Changed
 
 - 📄 **Documentation Improvements**: Updated README and DOCKER_GUIDE to clarify Docker port publishing and environment variable usage for all run/config examples.
-- 🐳 **Docker Examples**: All Docker run and configuration examples now include `-p 3000:3000 -p 3005:3005` and all required `-e` environment variables for correct operation.
+- 🐳 **Docker Examples**: All Docker run and configuration examples now include `-p 3100:3100 -p 3005:3005` and all required `-e` environment variables for correct operation.
 - 📝 **Version Bump**: Updated all version references to 1.1.1 in documentation and Docker Hub tags.
 
 # Changelog
@@ -66,11 +66,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **NEW FEATURE**: `book_hours_bulk` tool for efficient multi-day time booking
-- **Date Range Support**: Book hours across multiple days with single API call
-- **Weekday Selection**: Configurable weekday inclusion (Monday-Friday by default)
 - **Smart Defaults**: Automatic budget lookup and sensible weekday configuration
-- **Flexible Scheduling**: Support for custom weekday patterns including weekends
+  🐳 **Docker Examples**: All Docker run and configuration examples now use `-p 3100:3100 -p 3005:3005` and all required `-e` environment variables for correct operation.
 
 ### Changed
 
