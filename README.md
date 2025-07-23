@@ -1,8 +1,6 @@
 # Dept Hour Booking MCP Server
 
-> **✅ Version 1.1.1 - Latest Release**
->
-> **Current Status**: Functional with Google Auth, bulk booking capabilities, and time entry deletion.
+> **✅ Version 1.1.1 - Latest Release** > **Current Status**: Functional with Google Auth, bulk booking capabilities, and time entry deletion.
 
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that integrates with the Dept Public API for time tracking and project management. Built following the same patterns as the [GitHub MCP Server](https://github.com/github/github-mcp-server).
 
@@ -20,101 +18,29 @@ A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that i
 - **🐳 Docker Ready**: Easy deployment with Docker Compose
 - **🤖 AI-Ready**: Natural language interface through MCP protocol
 
-## Version 1.1.1 Release Notes
-
-This release introduces several improvements and fixes (see CHANGELOG for details):
-
-- 📝 **Improved Documentation**: Expanded README with clearer setup instructions, troubleshooting, and configuration details.
-- 🛠️ **Refined Bulk Booking**: Enhanced bulk booking logic for more reliable weekday selection and validation.
-- 🗑️ **Delete Hours Improvements**: Added confirmation and detailed feedback when deleting time entries.
-- 🔒 **Authentication Updates**: Improved Google ID token handling and error messages for authentication failures.
-- 🐳 **Docker Workflow Polishing**: Streamlined Docker scripts and clarified Docker Compose usage.
-- 🧪 **Testing Enhancements**: Added and updated scripts for easier MCP configuration testing.
-- 🧹 **General Cleanup**: Minor bug fixes, codebase cleanup, and improved error handling throughout.
-
-See [CHANGELOG.md](./CHANGELOG.md) for a complete list of changes.
-
----
-
 ## Quick Start
 
 > **✅ ZERO SETUP REQUIRED**: Multiple options available - choose what works best for you!
 
 ### 🚀 Easiest Installation: VS Code Extension
 
-**For the simplest setup experience:**
-
 1. **Install the MCP Extension:**
-
    - Install the [Copilot MCP Extension](https://marketplace.visualstudio.com/items?itemName=AutomataLabs.copilot-mcp) from the VS Code Marketplace
    - Or search for "Copilot MCP" in VS Code Extensions
-
 2. **Install this MCP Server:**
-
    - The extension provides a user-friendly interface to install and configure MCP servers
    - Simply search for "Dept Hour Booking" or use the repository URL
    - The extension handles all the configuration automatically
-
-3. **No manual setup required** - the extension manages everything for you!
+3. **Configure the variables** – All required variables are automatically added to the Docker configuration. See [VS Code MCP Configuration](#vs-code-mcp-configuration) for details.
 
 ### VS Code MCP (Manual Configuration)
 
-**⚡ FASTEST: Docker Hub Option**
+**Recommended: .vscode/mcp.json**
 
 1. In VS Code, press <kbd>CMD</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> and search for `MCP: Add Server`
 2. Choose **Docker Image**
 3. Enter `elmarkou/dept-hourbooking` as the image name
 4. VS Code will prompt for your credentials when you first connect
-
-**🔨 ALTERNATIVE: Local Build Option**
-
-1. In VS Code, press <kbd>CMD</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> and search for `MCP: Add Server`
-2. Choose **Local Docker Compose**
-3. Enter the path to your local repository and follow the prompts
-4. VS Code will prompt for your credentials when you first connect
-
-**🛠️ DEVELOPMENT: Node.js Direct**
-
-- If you prefer Node.js over Docker, run:
-  ```bash
-  npm install && npm run build
-  ```
-- Then use `.vscode/mcp-nodejs.json` (copy to `.vscode/mcp.json`)
-
-### Manual Setup (Optional)
-
-Only needed if you want to pre-build or test. We provide convenient npm scripts for all tasks:
-
-```bash
-# Setup and preparation
-npm run setup          # Run initial setup script
-npm run setup:mcp       # Setup MCP-specific configuration
-
-# Docker operations
-npm run docker:build    # Build Docker image
-npm run docker:run      # Run MCP server with Docker
-npm run docker:cleanup  # Clean up Docker resources
-npm run docker:pull     # Pull Docker image from registry
-npm run deploy:docker   # Build and push to Docker Hub
-
-# Development and testing
-npm run build          # Build TypeScript project
-npm run dev:stdio      # Run in development mode
-npm run dev:inspector  # Start MCP Inspector
-```
-
-**Quick commands:**
-
-```bash
-# Most common: Setup
-npm run setup
-
-# Docker workflow
-npm run docker:build && npm run docker:run
-
-# Development workflow
-npm run build && npm run dev:stdio
-```
 
 ## VS Code MCP Configuration
 
@@ -122,34 +48,17 @@ npm run build && npm run dev:stdio
 
 These configuration options are for setting up the Dept Hour Booking MCP server in Visual Studio Code using the Copilot MCP extension.
 
-The server includes three ready-to-use VS Code MCP configuration examples:
+The recommended solution is to use `.vscode/mcp.json` for your VS Code MCP configuration. This option provides automatic Docker image building, clean output, and is perfect for both development and customization.
 
-#### Option 1: Docker Hub (`.vscode/mcp-dockerhub.json`) - Easiest ⭐⭐⭐
+**.vscode/mcp.json (Recommended)**
 
-- **🚀 INSTANT SETUP**: Uses pre-built Docker image from Docker Hub
-- **📦 NO BUILD REQUIRED**: No cloning, no building—just use Docker
-- **🌐 UNIVERSAL**: Works anywhere with Docker, no local build needed
-- **⚡ FASTEST**: Skip build time completely
-- **Recommended for most users**: Quick start, no code changes needed
-
-#### Option 2: Local Docker Build (`.vscode/mcp.json`) - Recommended ⭐⭐
-
-- **🔥 AUTOMATIC SETUP**: Builds Docker image automatically on first use
-- **For development only**: Clone the repository if you want to make changes to the code or customize the server
-- **🤫 CLEAN OUTPUT**: Suppresses Docker build warnings for clean MCP experience
+- **Automatic setup**: Builds Docker image automatically on first use
+- **For development and customization**: Clone the repository if you want to make changes to the code
+- **Clean output**: Suppresses Docker build warnings for a clean MCP experience
 - Uses `docker-compose` for automatic dependency management
 - More isolated and consistent environment
-- Perfect for development and customization
 
-#### Option 3: Node.js-based (`.vscode/mcp-nodejs.json`) - For Development ⭐
-
-- Uses Node.js directly, faster startup after initial build
-- **For advanced development only**: Requires cloning the repository and manual build
-- More reliable for local VS Code integration
-- Easier debugging and development
-- Requires manual `npm install && npm run build` first
-
-**Both configurations will prompt you for credentials:**
+You will be prompted for credentials:
 
 - **Dept Client ID**: Your Dept client ID (typically "17")
 - **Dept Client Secret**: Your client secret (contact Dept admin if needed)
@@ -158,18 +67,6 @@ The server includes three ready-to-use VS Code MCP configuration examples:
 - **Default Activity ID, Project ID, Company ID, Budget ID**: Your default IDs
 
 **Important:**
-
-When you use the MCP: Add Server command in VS Code, the initial configuration will only include the image and basic command. You must manually edit the configuration file (e.g., `.vscode/mcp.json` or `.vscode/mcp-dockerhub.json`) to add:
-
-- The required port mappings:
-  - `-p 3100:3100`
-  - `-p 3005:3005`
-- All required environment variables:
-  - `DEPT_EMPLOYEE_ID`, `DEPT_CORPORATION_ID`, `DEPT_DEFAULT_ACTIVITY_ID`, `DEPT_DEFAULT_PROJECT_ID`, `DEPT_DEFAULT_COMPANY_ID`, `DEPT_DEFAULT_BUDGET_ID`
-
-Refer to the recommended configuration block below (using VS Code input variables for environment values):
-
-Below is an example VS Code MCP configuration block. Add the following `inputs` section to your `.vscode/mcp.json` or `.vscode/mcp-dockerhub.json` file to prompt for all required environment variables:
 
 ```json
 {
@@ -548,6 +445,49 @@ Once configured, you can interact with the server using natural language:
 
 ## Local Development
 
+**Development: Node.js Direct**
+
+- If you prefer Node.js over Docker, run:
+  ```bash
+  npm install && npm run build
+  ```
+- Then use `.vscode/mcp.json`
+
+### Manual Setup (Optional)
+
+Only needed if you want to pre-build or test. We provide convenient npm scripts for all tasks:
+
+```bash
+# Setup and preparation
+npm run setup          # Run initial setup script
+npm run setup:mcp      # Setup MCP-specific configuration
+
+# Docker operations
+npm run docker:build    # Build Docker image
+npm run docker:run      # Run MCP server with Docker
+npm run docker:cleanup  # Clean up Docker resources
+npm run docker:pull     # Pull Docker image from registry
+npm run deploy:docker   # Build and push to Docker Hub
+
+# Development and testing
+npm run build           # Build TypeScript project
+npm run dev:stdio       # Run in development mode
+npm run dev:inspector   # Start MCP Inspector
+```
+
+**Quick commands:**
+
+```bash
+# Most common: Setup
+npm run setup
+
+# Docker workflow
+npm run docker:build && npm run docker:run
+
+# Development workflow
+npm run build && npm run dev:stdio
+```
+
 ### Using Docker Compose
 
 1. **Clone the repository**
@@ -594,59 +534,19 @@ Once configured, you can interact with the server using natural language:
    npx @modelcontextprotocol/inspector
    ```
 
+docker-compose build
+docker-compose up
+docker build -t depthourbooking-dept-hourbooking .
+docker run -i --rm \
+
 ## Building Docker Image
 
 ```bash
-# Build the image
-docker-compose build
+# Build the Docker image
+npm run docker:build
 
 # Run the container
-docker-compose up
-```
-
-Or manually:
-
-```bash
-# Build the image
-docker build -t depthourbooking-dept-hourbooking .
-
-# Run the container
-docker run -i --rm \
-  -p 3100:3100 -p 3005:3005 \
-  -e DEPT_EMPLOYEE_ID="your_employee_id" \
-  -e DEPT_CORPORATION_ID="your_corporation_id" \
-  -e DEPT_DEFAULT_ACTIVITY_ID="your_activity_id" \
-  -e DEPT_DEFAULT_PROJECT_ID="your_project_id" \
-  -e DEPT_DEFAULT_COMPANY_ID="your_company_id" \
-  -e DEPT_DEFAULT_BUDGET_ID="your_budget_id" \
-  depthourbooking-dept-hourbooking
-```
-
-## Project Structure
-
-```
-├── src/
-│   └── index.ts              # Main MCP server implementation
-├── scripts/
-│   ├── setup.sh              # General setup script
-│   ├── setup-mcp.sh          # Automated MCP setup script
-│   ├── test-mcp.sh           # Test script for MCP configurations
-│   ├── run-mcp.sh            # Run MCP server with Docker
-│   ├── build-and-push.sh     # Build and push Docker image
-│   ├── pull-image.sh         # Pull Docker image from registry
-│   └── docker-cleanup.sh     # Clean up Docker resources
-├── .vscode/
-│   ├── mcp.json              # Docker-based MCP configuration
-│   ├── mcp-dockerhub.json    # Docker Hub-based MCP configuration
-│   ├── mcp-nodejs.json       # Node.js-based MCP configuration
-│   └── tasks.json            # VS Code tasks including setup
-├── .env.example              # Environment configuration template
-├── .gitignore               # Git ignore rules
-├── Dockerfile                # Docker configuration
-├── docker-compose.yml        # Docker Compose for development
-├── package.json             # Node.js dependencies and scripts
-├── tsconfig.json            # TypeScript configuration
-└── README.md                # This file
+npm run docker:run
 ```
 
 ## How It Works
@@ -693,14 +593,12 @@ This process ensures secure access and is only required on your first use or if 
 - **Missing credentials**: Ensure you enter valid credentials when prompted by VS Code MCP
 - **"Process exited with code 125"**: Docker configuration issue
   - **Solution**: Ensure Docker is running and try again
-- **"Missing required credentials"**: Make sure you've set `DEPT_CLIENT_SECRET` and `DEPT_GOOGLE_ID_TOKEN`
-- **"Initial Google authentication failed"**: Your Google ID token may be expired or invalid, or Google Cloud project is not set up
+- **"Initial Google authentication failed"**: Your Google ID token may be expired or invalid
 - **"Token refresh failed"**: Your session may have expired, restart the server to re-authenticate with Google
 - **"Invalid parameters"**: Check your input format matches the schema
 - **"API Error 401"**: Your Google authentication may be invalid or expired
 - **"Budget not found"**: Verify your default budget ID is correct
 - **"MCP server could not be started: Process exited with code 125"**: Check Docker image name in MCP configuration
-- **Google OAuth issues**: ⚠️ **Most likely cause**: Dept needs to create Google Cloud project for proper OAuth setup
 
 ### Docker Issues
 
