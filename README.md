@@ -4,11 +4,6 @@
 
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that integrates with the Dept Public API for time tracking and project management. Built following the same patterns as the [GitHub MCP Server](https://github.com/github/github-mcp-server).
 
-### Examples
-
-![Example 1](https://raw.githubusercontent.com/elmarkou/dept-hourbooking/refs/heads/main/docs/screenshot1.png)
-![Example 2](https://raw.githubusercontent.com/elmarkou/dept-hourbooking/refs/heads/main/docs/screenshot2.png)
-
 ## Features
 
 - **📝 Book Hours**: Create individual time entries with automatic budget lookup
@@ -22,6 +17,15 @@ A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that i
 - **🔒 Secure**: Google ID token authentication with automatic refresh
 - **🐳 Docker Ready**: Easy deployment with Docker Compose
 - **🤖 AI-Ready**: Natural language interface through MCP protocol
+
+### Examples
+
+<a href="https://raw.githubusercontent.com/elmarkou/dept-hour-booking-mcp/refs/heads/main/docs/screenshot2.png" target="_blank">
+  <img src="https://raw.githubusercontent.com/elmarkou/dept-hour-booking-mcp/refs/heads/main/docs/screenshot2.png" alt="Example 2" width="300px" style="display: inline-block; vertical-align: middle;" />
+</a>
+<a href="https://raw.githubusercontent.com/elmarkou/dept-hour-booking-mcp/refs/heads/main/docs/screenshot1.png" target="_blank">
+  <img src="https://raw.githubusercontent.com/elmarkou/dept-hour-booking-mcp/refs/heads/main/docs/screenshot1.png" alt="Example 1" width="300px" style="margin-right: 10px; display: inline-block; vertical-align: middle;" />
+</a>
 
 ## Quick Start
 
