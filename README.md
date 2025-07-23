@@ -61,32 +61,17 @@ See [CHANGELOG.md](./CHANGELOG.md) for a complete list of changes.
 
 **⚡ FASTEST: Docker Hub Option**
 
-1. **Clone the repository:**
-
-   ```bash
-   git clone <your-repo>
-   cd dept-hourbooking
-   ```
-
-2. **Use the Docker Hub configuration:**
-   - Copy `.vscode/mcp-dockerhub.json` to `.vscode/mcp.json`
-   - **INSTANT SETUP**: Uses pre-built image from Docker Hub
-   - **NO BUILD TIME**: Downloads ready-to-use image automatically
-   - VS Code will prompt for your credentials when you first connect
+1. In VS Code, press <kbd>CMD</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> and search for `MCP: Add Server`
+2. Choose **Docker Image**
+3. Enter `elmarkou/dept-hourbooking` as the image name
+4. VS Code will prompt for your credentials when you first connect
 
 **🔨 ALTERNATIVE: Local Build Option**
 
-1. **Clone the repository:**
-
-   ```bash
-   git clone <your-repo>
-   cd dept-hourbooking
-   ```
-
-2. **Use the local build configuration:**
-   - The `.vscode/mcp.json` configuration is ready to use
-   - **No manual setup needed** - Docker will automatically build the image on first use
-   - VS Code will prompt for your credentials when you first connect
+1. In VS Code, press <kbd>CMD</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> and search for `MCP: Add Server`
+2. Choose **Local Docker Compose**
+3. Enter the path to your local repository and follow the prompts
+4. VS Code will prompt for your credentials when you first connect
 
 **🛠️ DEVELOPMENT: Node.js Direct**
 
@@ -114,7 +99,6 @@ npm run deploy:docker   # Build and push to Docker Hub
 
 # Development and testing
 npm run build          # Build TypeScript project
-npm run test:mcp       # Test MCP configurations
 npm run dev:stdio      # Run in development mode
 npm run dev:inspector  # Start MCP Inspector
 ```
@@ -122,8 +106,8 @@ npm run dev:inspector  # Start MCP Inspector
 **Quick commands:**
 
 ```bash
-# Most common: Setup and test
-npm run setup && npm run test:mcp
+# Most common: Setup
+npm run setup
 
 # Docker workflow
 npm run docker:build && npm run docker:run
@@ -132,22 +116,26 @@ npm run docker:build && npm run docker:run
 npm run build && npm run dev:stdio
 ```
 
-### VS Code MCP Configuration
+## VS Code MCP Configuration
 
-The server includes three ready-to-use MCP configurations:
+> **You do NOT need to clone the repository to use the Dept Hour Booking MCP server in Visual Studio Code. Just use Docker! Clone only if you want to make changes to the code or develop locally.**
+
+These configuration options are for setting up the Dept Hour Booking MCP server in Visual Studio Code using the Copilot MCP extension.
+
+The server includes three ready-to-use VS Code MCP configuration examples:
 
 #### Option 1: Docker Hub (`.vscode/mcp-dockerhub.json`) - Easiest ⭐⭐⭐
 
 - **🚀 INSTANT SETUP**: Uses pre-built Docker image from Docker Hub
-- **📦 NO BUILD REQUIRED**: Downloads ready-to-use image automatically
+- **📦 NO BUILD REQUIRED**: No cloning, no building—just use Docker
 - **🌐 UNIVERSAL**: Works anywhere with Docker, no local build needed
 - **⚡ FASTEST**: Skip build time completely
-- Perfect for quick starts and Copilot installations
+- **Recommended for most users**: Quick start, no code changes needed
 
 #### Option 2: Local Docker Build (`.vscode/mcp.json`) - Recommended ⭐⭐
 
 - **🔥 AUTOMATIC SETUP**: Builds Docker image automatically on first use
-- **✅ ZERO CONFIGURATION**: Just clone and use - no manual steps required
+- **For development only**: Clone the repository if you want to make changes to the code or customize the server
 - **🤫 CLEAN OUTPUT**: Suppresses Docker build warnings for clean MCP experience
 - Uses `docker-compose` for automatic dependency management
 - More isolated and consistent environment
@@ -156,6 +144,7 @@ The server includes three ready-to-use MCP configurations:
 #### Option 3: Node.js-based (`.vscode/mcp-nodejs.json`) - For Development ⭐
 
 - Uses Node.js directly, faster startup after initial build
+- **For advanced development only**: Requires cloning the repository and manual build
 - More reliable for local VS Code integration
 - Easier debugging and development
 - Requires manual `npm install && npm run build` first
@@ -168,12 +157,95 @@ The server includes three ready-to-use MCP configurations:
 - **Corporation ID**: Your Dept corporation ID
 - **Default Activity ID, Project ID, Company ID, Budget ID**: Your default IDs
 
-**For first-time users:**
+**Important:**
 
-1. Clone the repository
-2. Open in VS Code with MCP enabled
-3. The Docker configuration will automatically build everything on first use
-4. Enter your credentials when prompted
+When you use the MCP: Add Server command in VS Code, the initial configuration will only include the image and basic command. You must manually edit the configuration file (e.g., `.vscode/mcp.json` or `.vscode/mcp-dockerhub.json`) to add:
+
+- The required port mappings:
+  - `-p 3100:3100`
+  - `-p 3005:3005`
+- All required environment variables:
+  - `DEPT_EMPLOYEE_ID`, `DEPT_CORPORATION_ID`, `DEPT_DEFAULT_ACTIVITY_ID`, `DEPT_DEFAULT_PROJECT_ID`, `DEPT_DEFAULT_COMPANY_ID`, `DEPT_DEFAULT_BUDGET_ID`
+
+Refer to the recommended configuration block below (using VS Code input variables for environment values):
+
+Below is an example VS Code MCP configuration block. Add the following `inputs` section to your `.vscode/mcp.json` or `.vscode/mcp-dockerhub.json` file to prompt for all required environment variables:
+
+```json
+{
+  "inputs": [
+    {
+      "id": "deptEmployeeId",
+      "type": "string",
+      "description": "Your Dept employee ID"
+    },
+    {
+      "id": "deptCorporationId",
+      "type": "string",
+      "description": "Your Dept corporation ID"
+    },
+    {
+      "id": "deptDefaultActivityId",
+      "type": "string",
+      "description": "Default activity ID (optional)"
+    },
+    {
+      "id": "deptDefaultProjectId",
+      "type": "string",
+      "description": "Default project ID (optional)"
+    },
+    {
+      "id": "deptDefaultCompanyId",
+      "type": "string",
+      "description": "Default company ID (optional)"
+    },
+    {
+      "id": "deptDefaultBudgetId",
+      "type": "string",
+      "description": "Default budget ID"
+    }
+  ],
+  "dept-hourbooking": {
+    "type": "stdio",
+    "command": "docker",
+    "args": [
+      "run",
+      "-i",
+      "--rm",
+      "-p",
+      "3100:3100",
+      "-p",
+      "3005:3005",
+      "-e",
+      "DEPT_EMPLOYEE_ID",
+      "-e",
+      "DEPT_CORPORATION_ID",
+      "-e",
+      "DEPT_DEFAULT_ACTIVITY_ID",
+      "-e",
+      "DEPT_DEFAULT_PROJECT_ID",
+      "-e",
+      "DEPT_DEFAULT_COMPANY_ID",
+      "-e",
+      "DEPT_DEFAULT_BUDGET_ID",
+      "-e",
+      "DOCKER_CONTAINER=true",
+      "elmarkou/dept-hourbooking"
+    ],
+    "env": {
+      "DEPT_EMPLOYEE_ID": "${input:deptEmployeeId}",
+      "DEPT_CORPORATION_ID": "${input:deptCorporationId}",
+      "DEPT_DEFAULT_ACTIVITY_ID": "${input:deptDefaultActivityId}",
+      "DEPT_DEFAULT_PROJECT_ID": "${input:deptDefaultProjectId}",
+      "DEPT_DEFAULT_COMPANY_ID": "${input:deptDefaultCompanyId}",
+      "DEPT_DEFAULT_BUDGET_ID": "${input:deptDefaultBudgetId}"
+    }
+  }
+}
+```
+
+**Summary:**
+After adding the server, always update the configuration file to include all required ports and environment variables for the MCP server to work correctly.
 
 ### Claude Desktop Configuration
 

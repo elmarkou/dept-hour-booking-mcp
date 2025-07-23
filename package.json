@@ -21,6 +21,7 @@
     "docker:pull": "chmod +x scripts/*.sh && ./scripts/pull-image.sh",
     "docker:deploy": "chmod +x scripts/*.sh && ./scripts/build-and-push.sh",
     "test:mcp": "chmod +x scripts/*.sh && ./scripts/test-mcp.sh"
+    
   },
   "author": "",
   "license": "ISC",

@@ -13,9 +13,8 @@ else
     exit 1
 fi
 
-# Test Node.js configuration
 echo "Testing Node.js configuration..."
-if node ./lib/src/index.js --version > /dev/null 2>&1; then
+if node ./lib/src/index.js > /dev/null 2>&1; then
     echo "✅ Node.js configuration is working"
 else
     echo "❌ Node.js configuration failed - make sure you ran 'npm run build'"

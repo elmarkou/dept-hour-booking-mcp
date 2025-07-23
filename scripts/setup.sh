@@ -13,9 +13,14 @@ if ! docker info > /dev/null 2>&1; then
     exit 1
 fi
 
+if ! docker compose version > /dev/null 2>&1; then
+    echo "❌ 'docker compose' command not found. Please update Docker Desktop or install Docker Compose V2."
+    exit 1
+fi
+
 # Clean up any existing containers to avoid conflicts
 echo "🧹 Cleaning up existing containers..."
-docker-compose down 2>/dev/null || true
+docker compose down 2>/dev/null || true
 
 # Force stop and remove any running containers with our image name
 echo "🔍 Checking for duplicate containers..."
@@ -37,16 +42,16 @@ fi
 IMAGE_NAME="depthourbooking-dept-hourbooking"
 if docker images --format "{{.Repository}}" | grep -q "^${IMAGE_NAME}$"; then
     echo "📦 Docker image exists. Starting container..."
-    docker-compose up -d
+    docker compose up -d
 else
     echo "🏗️  Docker image not found. Building and starting container..."
-    docker-compose up --build -d
+    docker compose up --build -d
 fi
 
 # Show status
 echo "✅ Container started successfully!"
 echo "Container status:"
-docker-compose ps
+docker compose ps
 
 # Check for multiple containers with the same image (potential issue detection)
 CONTAINER_COUNT=$(docker ps -q --filter "ancestor=depthourbooking-dept-hourbooking" | wc -l | tr -d ' ')
@@ -60,8 +65,8 @@ fi
 
 echo ""
 echo "📋 Useful commands:"
-echo "📊 View logs: docker-compose logs -f"
-echo "🛑 Stop: docker-compose down"
-echo "🔄 Rebuild: docker-compose up --build -d"
+echo "📊 View logs: docker compose logs -f"
+echo "🛑 Stop: docker compose down"
+echo "🔄 Rebuild: docker compose up --build -d"
 echo "🧹 Cleanup: ./docker-cleanup.sh"
 echo "🔍 Check containers: docker ps --filter 'ancestor=depthourbooking-dept-hourbooking'"
